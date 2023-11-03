@@ -1,16 +1,21 @@
 package main
 
 import (
-	"RnpServer/Db"
+	"RnpServer/config"
+	"RnpServer/db"
+	"os"
 )
 
 func main() {
-	db := new(Db.Common)
+	os.Setenv("CONFIG_PATH", "config/local.yaml")
+	cfg := config.MustLoad()
 
-	err := db.Start("user=postgres password=1611 dbname=RollAndPlay sslmode=disable")
+	dataBase := new(db.Common)
+
+	err := dataBase.Start(cfg.DbConnection)
 	if err != nil {
 		panic(err)
 	}
 
-	defer db.Close()
+	defer dataBase.Close()
 }

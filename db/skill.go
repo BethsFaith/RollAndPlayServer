@@ -1,4 +1,4 @@
-package Db
+package db
 
 type Skill struct {
 	id         int
