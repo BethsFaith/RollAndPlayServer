@@ -24,21 +24,25 @@ func (object *Common) Close() {
 	}
 }
 
-func (object *Common) Select(queryStr string) error {
-	rows, err := object.db.Query(queryStr)
+func (object *Common) Create(queryStr string, parameters ...any) (sql.Result, error) {
+	return object.db.Exec(queryStr, parameters...)
+}
+
+func (object *Common) Select(queryStr string, parameters ...any) (*sql.Rows, error) {
+	rows, err := object.db.Query(queryStr, parameters...)
 	if err != nil {
-		return err
+		return rows, err
 	}
 
 	err = rows.Close()
-	return err
+
+	return rows, err
 }
 
-func (object *Common) Update(queryStr string) (int64, error) {
-	result, err := object.db.Exec(queryStr)
-	if err != nil {
-		return 0, err
-	}
+func (object *Common) Update(queryStr string, parameters ...any) (sql.Result, error) {
+	return object.db.Exec(queryStr, parameters...)
+}
 
-	return result.RowsAffected()
+func (object *Common) Delete(queryStr string, parameters ...any) (sql.Result, error) {
+	return object.db.Exec(queryStr, parameters)
 }
