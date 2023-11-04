@@ -7,8 +7,9 @@ import (
 )
 
 type Store struct {
-	logger *slog.Logger
-	db     *sql.DB
+	logger         *slog.Logger
+	db             *sql.DB
+	userRepository *UserRepository
 }
 
 func New(l *slog.Logger) *Store {
@@ -40,11 +41,15 @@ func (s *Store) Close() {
 	}
 }
 
-func (s *Store) Create(queryStr string, parameters ...any) (sql.Result, error) {
-	return s.db.Exec(queryStr, parameters...)
+func (s *Store) Create(queryStr string, parameters ...any) *sql.Row {
+	return s.db.QueryRow(queryStr, parameters...)
 }
 
-func (s *Store) Select(queryStr string, parameters ...any) (*sql.Rows, error) {
+func (s *Store) SelectRow(queryStr string, parameters ...any) *sql.Row {
+	return s.db.QueryRow(queryStr, parameters...)
+}
+
+func (s *Store) SelectRows(queryStr string, parameters ...any) (*sql.Rows, error) {
 	rows, err := s.db.Query(queryStr, parameters...)
 	if err != nil {
 		return rows, err
@@ -61,4 +66,16 @@ func (s *Store) Update(queryStr string, parameters ...any) (sql.Result, error) {
 
 func (s *Store) Delete(queryStr string, parameters ...any) (sql.Result, error) {
 	return s.db.Exec(queryStr, parameters)
+}
+
+func (s *Store) User() *UserRepository {
+	if s.userRepository != nil {
+		return s.userRepository
+	}
+
+	s.userRepository = &UserRepository{
+		store: s,
+	}
+
+	return s.userRepository
 }

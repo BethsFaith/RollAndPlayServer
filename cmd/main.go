@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	os.Setenv("CONFIG_PATH", "configs/local.yaml")
+	if err := os.Setenv("CONFIG_PATH", "configs/local.yaml"); err != nil {
+		panic(err)
+	}
 	cfg := config.MustLoad()
 
 	logger := log.SetupLogger(cfg.Env)
