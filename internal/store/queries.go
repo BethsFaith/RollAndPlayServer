@@ -1,4 +1,4 @@
-package db
+package store
 
 const insertQ = "insert into "
 const selectQ = "select * from "

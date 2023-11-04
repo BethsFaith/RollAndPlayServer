@@ -1,9 +1,10 @@
 package main
 
 import (
+	"RnpServer/internal/app/apiserver"
 	"RnpServer/internal/config"
-	"RnpServer/internal/db"
 	"RnpServer/internal/log"
+	"RnpServer/internal/store"
 	"golang.org/x/exp/slog"
 	"os"
 )
@@ -13,25 +14,24 @@ func main() {
 	cfg := config.MustLoad()
 
 	logger := log.SetupLogger(cfg.Env)
-	logger = logger.With(slog.String("env", cfg.Env)) // к каждому сообщению будет добавляться поле с информацией о текущем окружении
+	logger = logger.With(slog.String("env", cfg.Env))
 
-	logger.Info("initializing server", slog.String("address", cfg.Address)) // Помимо сообщения выведем параметр с адресом
+	logger.Info("initializing data base", slog.String("db", cfg.DbConnection))
+	logger.Info("initializing server", slog.String("address", cfg.Address))
 	logger.Debug("logger debug mode enabled")
 
-	dataBase := new(db.Common)
-
-	err := dataBase.Start(cfg.DbConnection)
+	dataBase := store.New()
+	err := dataBase.Open(cfg.DbConnection)
 	if err != nil {
+		logger.Error(err.Error())
 		panic(err)
+	} else {
+		logger.Info("starting data base")
 	}
-
 	defer dataBase.Close()
 
-	//router := chi.NewRouter()
-	//
-	//router.Use(middleware.RequestID)
-	//router.Use(middleware.Logger)
-	//router.Use(mwLogger.New(logger))
-	//router.Use(middleware.Recoverer)
-	//router.Use(middleware.URLFormat)
+	server := apiserver.New(cfg, logger)
+	if err := server.Start(); err != nil {
+		logger.Error(err.Error())
+	}
 }
