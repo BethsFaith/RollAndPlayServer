@@ -4,7 +4,6 @@ import (
 	"RnpServer/internal/app/apiserver"
 	"RnpServer/internal/config"
 	"RnpServer/internal/log"
-	"RnpServer/internal/store"
 	"golang.org/x/exp/slog"
 	"os"
 )
@@ -20,18 +19,11 @@ func main() {
 	logger.Info("initializing server", slog.String("address", cfg.Address))
 	logger.Debug("logger debug mode enabled")
 
-	dataBase := store.New()
-	err := dataBase.Open(cfg.DbConnection)
-	if err != nil {
-		logger.Error(err.Error())
-		panic(err)
-	} else {
-		logger.Info("starting data base")
-	}
-	defer dataBase.Close()
-
 	server := apiserver.New(cfg, logger)
 	if err := server.Start(); err != nil {
 		logger.Error(err.Error())
+		panic(err)
 	}
+
+	defer server.Stop()
 }

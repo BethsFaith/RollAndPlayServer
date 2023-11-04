@@ -3,37 +3,49 @@ package store
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
+	"golang.org/x/exp/slog"
 )
 
 type Store struct {
-	db *sql.DB
+	logger *slog.Logger
+	db     *sql.DB
 }
 
-func New() *Store {
-	return &Store{}
+func New(l *slog.Logger) *Store {
+	return &Store{
+		logger: l,
+	}
 }
 
-func (object *Store) Open(connStr string) error {
-	var err error
+func (s *Store) Open(connStr string) error {
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		return err
+	}
 
-	object.db, err = sql.Open("postgres", connStr)
+	if err = db.Ping(); err != nil {
+		return err
+	}
+
+	s.db = db
+	s.logger.Info("starting data base")
 
 	return err
 }
 
-func (object *Store) Close() {
-	err := object.db.Close()
+func (s *Store) Close() {
+	err := s.db.Close()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (object *Store) Create(queryStr string, parameters ...any) (sql.Result, error) {
-	return object.db.Exec(queryStr, parameters...)
+func (s *Store) Create(queryStr string, parameters ...any) (sql.Result, error) {
+	return s.db.Exec(queryStr, parameters...)
 }
 
-func (object *Store) Select(queryStr string, parameters ...any) (*sql.Rows, error) {
-	rows, err := object.db.Query(queryStr, parameters...)
+func (s *Store) Select(queryStr string, parameters ...any) (*sql.Rows, error) {
+	rows, err := s.db.Query(queryStr, parameters...)
 	if err != nil {
 		return rows, err
 	}
@@ -43,10 +55,10 @@ func (object *Store) Select(queryStr string, parameters ...any) (*sql.Rows, erro
 	return rows, err
 }
 
-func (object *Store) Update(queryStr string, parameters ...any) (sql.Result, error) {
-	return object.db.Exec(queryStr, parameters...)
+func (s *Store) Update(queryStr string, parameters ...any) (sql.Result, error) {
+	return s.db.Exec(queryStr, parameters...)
 }
 
-func (object *Store) Delete(queryStr string, parameters ...any) (sql.Result, error) {
-	return object.db.Exec(queryStr, parameters)
+func (s *Store) Delete(queryStr string, parameters ...any) (sql.Result, error) {
+	return s.db.Exec(queryStr, parameters)
 }
