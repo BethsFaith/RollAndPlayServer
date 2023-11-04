@@ -4,6 +4,7 @@ import (
 	"RnpServer/internal/app/store/sqlstore"
 	"RnpServer/internal/config"
 	"database/sql"
+	"github.com/gorilla/sessions"
 	"golang.org/x/exp/slog"
 	"net/http"
 )
@@ -23,7 +24,8 @@ func Start(config *config.Config, log *slog.Logger) error {
 	}(db)
 
 	store := sqlstore.New(db)
-	s := newServer(store, log)
+	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey))
+	s := newServer(store, sessionStore, log)
 
 	return http.ListenAndServe(config.Address, s)
 }
