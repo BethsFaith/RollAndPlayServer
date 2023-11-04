@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	os.Setenv("CONFIG_PATH", "config/local.yaml")
+	os.Setenv("CONFIG_PATH", "configs/local.yaml")
 	cfg := config.MustLoad()
 
 	logger := log.SetupLogger(cfg.Env)
@@ -26,4 +26,12 @@ func main() {
 	}
 
 	defer dataBase.Close()
+
+	//router := chi.NewRouter()
+	//
+	//router.Use(middleware.RequestID)
+	//router.Use(middleware.Logger)
+	//router.Use(mwLogger.New(logger))
+	//router.Use(middleware.Recoverer)
+	//router.Use(middleware.URLFormat)
 }
