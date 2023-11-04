@@ -1,27 +1,28 @@
-package store
+package sqlstore
 
-import "RnpServer/internal/app/model"
+import (
+	"RnpServer/internal/app/model"
+	"RnpServer/internal/app/store"
+	"database/sql"
+	"errors"
+)
 
 type UserRepository struct {
 	store *Store
 }
 
-func (r *UserRepository) Create(u *model.User) (*model.User, error) {
+func (r *UserRepository) Create(u *model.User) error {
 	if err := u.Validate(); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := u.BeforeCreate(); err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := r.store.Create(
+	return r.store.Create(
 		insertQ+usersT+usersP+"values ($1, $2) RETURNING id", u.Email, u.EncryptedPassword,
-	).Scan(&u.ID); err != nil {
-		return nil, err
-	}
-
-	return u, nil
+	).Scan(&u.ID)
 }
 
 func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
@@ -34,6 +35,9 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 		&u.Email,
 		&u.EncryptedPassword,
 	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, store.ErrorRecordNotFound
+		}
 		return nil, err
 	}
 

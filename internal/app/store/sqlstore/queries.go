@@ -1,4 +1,4 @@
-package store
+package sqlstore
 
 const insertQ = "insert into "
 const selectQ = "select * from "

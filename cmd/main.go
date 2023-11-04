@@ -21,11 +21,8 @@ func main() {
 	logger.Info("initializing server", slog.String("address", cfg.Address))
 	logger.Debug("logger debug mode enabled")
 
-	server := apiserver.New(cfg, logger)
-	if err := server.Start(); err != nil {
+	if err := apiserver.Start(cfg, logger); err != nil {
 		logger.Error(err.Error())
 		panic(err)
 	}
-
-	defer server.Stop()
 }

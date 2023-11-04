@@ -1,64 +1,43 @@
 package apiserver
 
 import (
-	"RnpServer/internal/app/store"
+	"RnpServer/internal/app/store/sqlstore"
 	"RnpServer/internal/config"
-	"github.com/gorilla/mux"
+	"database/sql"
 	"golang.org/x/exp/slog"
-	"io"
 	"net/http"
 )
 
-type APIServer struct {
-	conf   *config.Config
-	logger *slog.Logger
-	router *mux.Router
-	store  *store.Store
-}
+func Start(config *config.Config, log *slog.Logger) error {
+	db, err := newDB(config.DbConnection)
 
-func New(conf *config.Config, log *slog.Logger) *APIServer {
-	return &APIServer{
-		conf:   conf,
-		logger: log,
-		router: mux.NewRouter(),
-	}
-}
-
-func (s *APIServer) Start() error {
-	s.configureRouter()
-
-	if err := s.configureStore(); err != nil {
+	if err != nil {
 		return err
 	}
 
-	s.logger.Info("starting api server")
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Error(err.Error())
+		}
+	}(db)
 
-	return http.ListenAndServe(s.conf.Address, s.router)
+	store := sqlstore.New(db)
+	s := newServer(store, log)
+
+	return http.ListenAndServe(config.Address, s)
 }
 
-func (s *APIServer) Stop() {
-	s.store.Close()
-}
+func newDB(dbConnection string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dbConnection)
 
-func (s *APIServer) configureRouter() {
-	s.router.HandleFunc("/hello", s.handleHello())
-}
-
-func (s *APIServer) configureStore() error {
-	st := store.New(s.logger)
-
-	if err := st.Open(s.conf.DbConnection); err != nil {
-		return err
+	if err != nil {
+		return nil, err
 	}
 
-	s.store = st
-
-	return nil
-}
-
-func (s *APIServer) handleHello() http.HandlerFunc {
-	// ...
-	return func(w http.ResponseWriter, r *http.Request) {
-		_, _ = io.WriteString(w, "Hello")
+	if err := db.Ping(); err != nil {
+		return nil, err
 	}
+
+	return db, nil
 }
