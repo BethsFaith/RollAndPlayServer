@@ -20,10 +20,6 @@ type HTTPServer struct {
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
 }
 
-func New() *Config {
-	return &Config{}
-}
-
 func MustLoad() *Config {
 	// Получаем путь до конфиг-файла из env-переменной CONFIG_PATH
 	configPath := os.Getenv("CONFIG_PATH")
