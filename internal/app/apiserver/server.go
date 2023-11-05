@@ -87,19 +87,19 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		session, err := s.sessionStore.Get(r, sessionName)
 		if err != nil {
-			s.error(w, r, http.StatusInternalServerError, err)
+			s.error(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		id, ok := session.Values["user_id"]
 		if !ok {
-			s.error(w, r, http.StatusUnauthorized, ErrorNotAuthenticated)
+			s.error(w, http.StatusUnauthorized, ErrorNotAuthenticated)
 			return
 		}
 
 		u, err := s.store.User().Find(id.(int))
 		if err != nil {
-			s.error(w, r, http.StatusUnauthorized, ErrorNotAuthenticated)
+			s.error(w, http.StatusUnauthorized, ErrorNotAuthenticated)
 			return
 		}
 
@@ -109,7 +109,7 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 
 func (s *server) handleWhoami() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
+		s.respond(w, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
 	}
 }
 
@@ -122,7 +122,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
+			s.error(w, http.StatusBadRequest, err)
 			return
 		}
 
@@ -131,11 +131,11 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 			Password: req.Password,
 		}
 		if err := s.store.User().Create(u); err != nil {
-			s.error(w, r, http.StatusUnprocessableEntity, err)
+			s.error(w, http.StatusUnprocessableEntity, err)
 			return
 		}
 
-		s.respond(w, r, http.StatusCreated, u)
+		s.respond(w, http.StatusCreated, u)
 	}
 }
 
@@ -148,39 +148,39 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
+			s.error(w, http.StatusBadRequest, err)
 			return
 		}
 
 		u, err := s.store.User().FindByEmail(req.Email)
 		if err != nil || !u.ComparePassword(req.Password) {
-			s.error(w, r, http.StatusUnauthorized, ErrorIncorrectEmailOrPassword)
+			s.error(w, http.StatusUnauthorized, ErrorIncorrectEmailOrPassword)
 			return
 		}
 
 		session, err := s.sessionStore.Get(r, sessionName)
 		if err != nil {
-			s.error(w, r, http.StatusInternalServerError, err)
+			s.error(w, http.StatusInternalServerError, err)
 			return
 		}
 
 		session.Values["user_id"] = u.ID
 		if err := s.sessionStore.Save(r, w, session); err != nil {
-			s.error(w, r, http.StatusInternalServerError, err)
+			s.error(w, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.respond(w, r, http.StatusOK, nil)
+		s.respond(w, http.StatusOK, nil)
 	}
 }
 
-func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
-	s.respond(w, r, code, map[string]string{"error": err.Error()})
+func (s *server) error(w http.ResponseWriter, code int, err error) {
+	s.respond(w, code, map[string]string{"error": err.Error()})
 }
 
-func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+func (s *server) respond(w http.ResponseWriter, code int, data interface{}) {
 	w.WriteHeader(code)
 	if data != nil {
-		json.NewEncoder(w).Encode(data)
+		_ = json.NewEncoder(w).Encode(data)
 	}
 }
