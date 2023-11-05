@@ -1,10 +1,11 @@
-package db
+package sqlstore
 
 const insertQ = "insert into "
 const selectQ = "select * from "
 const deleteQ = "delete from "
 const updateQ = "update "
 
+const usersT = "users "
 const skillsT = "skills "
 const skillsCategoryT = "skill_categories "
 const racesT = "races "
@@ -17,6 +18,7 @@ const systemRacesT = "system_races "
 const systemClassesT = "system_classes "
 const systemSkillsT = "system_skills "
 
+const usersP = "(email, encrypted_password) "
 const skillsP = "(name, icon, category_id) "
 const skillCategoriesP = "(name, icon) "
 const racesP = "name, model "
