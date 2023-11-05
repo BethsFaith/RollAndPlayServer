@@ -7,7 +7,7 @@ const updateQ = "update "
 
 const usersT = "users "
 const skillsT = "skills "
-const skillsCategoryT = "skill_categories "
+const skillCategoryT = "skill_categories "
 const racesT = "races "
 const characterClassT = "character_classes "
 const actionsT = "actions "

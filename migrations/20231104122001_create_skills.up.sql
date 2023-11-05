@@ -11,8 +11,9 @@ CREATE TABLE Skills
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 0 MINVALUE 0 MAXVALUE 2147483646 CACHE 1 ),
     name VARCHAR(255) NOT NULL,
     icon VARCHAR(1024),
-    category_id INTEGER,
+    category_id INTEGER REFERENCES Skill_Categories(id) ON DELETE CASCADE,
 
     CONSTRAINT Skills_pkey PRIMARY KEY (id),
-    FOREIGN KEY (category_id) REFERENCES Skill_Categories(id) ON DELETE SET NULL
-    );
+    CONSTRAINT Skills_ukey UNIQUE (name, category_id)
+);
+
