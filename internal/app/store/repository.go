@@ -11,8 +11,8 @@ type UserRepository interface {
 
 // SkillRepository ...
 type SkillRepository interface {
-	CreateSkill(*model.Skill) error
+	Create(*model.Skill) error
 	CreateCategory(*model.SkillCategory) error
-	FindSkill(int) (*model.Skill, error)
+	Find(int) (*model.Skill, error)
 	FindCategory(int) (*model.SkillCategory, error)
 }

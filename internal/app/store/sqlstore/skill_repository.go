@@ -11,8 +11,8 @@ type SkillRepository struct {
 	store *Store
 }
 
-// CreateSkill ...
-func (r *SkillRepository) CreateSkill(s *model.Skill) error {
+// Create ...
+func (r *SkillRepository) Create(s *model.Skill) error {
 	return r.store.Create(
 		insertQ+skillsT+skillsP+"values ($1, $2, $3) RETURNING id", s.Name, s.Icon, s.CategoryId,
 	).Scan(&s.ID)
@@ -26,8 +26,8 @@ func (r *SkillRepository) CreateCategory(sc *model.SkillCategory) error {
 	).Scan(&sc.ID)
 }
 
-// FindSkill ...
-func (r *SkillRepository) FindSkill(id int) (*model.Skill, error) {
+// Find ...
+func (r *SkillRepository) Find(id int) (*model.Skill, error) {
 	s := &model.Skill{}
 
 	if err := r.store.SelectRow(
