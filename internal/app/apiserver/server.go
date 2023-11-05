@@ -3,6 +3,7 @@ package apiserver
 import (
 	"RnpServer/internal/app/model"
 	"RnpServer/internal/app/store"
+	"context"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -16,8 +17,6 @@ type server struct {
 	store        store.Store
 	sessionStore sessions.Store
 }
-
-const sessionName = "rnpsession"
 
 func newServer(store store.Store, sessionStore sessions.Store, log *slog.Logger) *server {
 	s := &server{
@@ -40,6 +39,30 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods("POST")
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
+}
+
+func (s *server) authenticateUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		session, err := s.sessionStore.Get(r, sessionName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, ErrorNotAuthenticated)
+			return
+		}
+
+		u, err := s.store.User().Find(id.(int))
+		if err != nil {
+			s.error(w, r, http.StatusUnauthorized, ErrorNotAuthenticated)
+			return
+		}
+
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", u)))
+	})
 }
 
 func (s *server) handleUsersCreate() http.HandlerFunc {
