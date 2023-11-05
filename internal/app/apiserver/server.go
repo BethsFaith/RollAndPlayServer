@@ -71,10 +71,15 @@ func (s *server) logRequest(next http.Handler) http.Handler {
 		logger.Info(fmt.Sprintf("started %s %s", r.Method, r.RequestURI))
 
 		start := time.Now()
+		rw := &responseWriter{w, http.StatusOK}
+		next.ServeHTTP(rw, r)
 
-		next.ServeHTTP(w, r)
-
-		logger.Info(fmt.Sprintf("completed in %v", time.Now().Sub(start)))
+		logger.Info(fmt.Sprintf(
+			"completed with %d %s in %v",
+			rw.code,
+			http.StatusText(rw.code),
+			time.Now().Sub(start),
+		))
 	})
 }
 
