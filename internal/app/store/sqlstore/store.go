@@ -42,7 +42,7 @@ func (s *Store) Update(queryStr string, parameters ...any) (sql.Result, error) {
 }
 
 func (s *Store) Delete(queryStr string, parameters ...any) (sql.Result, error) {
-	return s.db.Exec(queryStr, parameters)
+	return s.db.Exec(queryStr, parameters...)
 }
 
 func (s *Store) User() store.UserRepository {

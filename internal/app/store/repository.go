@@ -15,4 +15,8 @@ type SkillRepository interface {
 	CreateCategory(*model.SkillCategory) error
 	Find(int) (*model.Skill, error)
 	FindCategory(int) (*model.SkillCategory, error)
+	Update(*model.Skill) error
+	UpdateCategory(category *model.SkillCategory) error
+	Delete(id int) error
+	DeleteCategory(id int) error
 }

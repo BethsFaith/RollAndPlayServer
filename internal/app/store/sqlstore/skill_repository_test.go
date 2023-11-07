@@ -76,3 +76,87 @@ func TestSkillRepository_FindCategory(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, cat)
 }
+
+func TestSkillRepository_Update(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SkillsT)
+
+	s := sqlstore.New(db)
+	skill := model.TestSkill(t)
+
+	assert.NoError(t, s.Skill().Update(skill))
+
+	_ = s.Skill().Create(skill)
+	skill.Name = "UpdatedName"
+
+	assert.NoError(t, s.Skill().Update(skill))
+
+	updatedSkill, err := s.Skill().Find(skill.ID)
+
+	assert.NoError(t, err)
+	assert.Equal(t, skill, updatedSkill)
+}
+
+func TestSkillRepository_UpdateCategory(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SkillCategoriesT)
+
+	s := sqlstore.New(db)
+	category := model.TestSkillCategory(t)
+
+	assert.NoError(t, s.Skill().UpdateCategory(category))
+
+	_ = s.Skill().CreateCategory(category)
+	category.Name = "UpdatedName"
+
+	assert.NoError(t, s.Skill().UpdateCategory(category))
+
+	updatedCategory, err := s.Skill().FindCategory(category.ID)
+
+	assert.NoError(t, err)
+	assert.Equal(t, category, updatedCategory)
+}
+
+func TestSkillRepository_Delete(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SkillsT)
+
+	s := sqlstore.New(db)
+	skill := model.TestSkill(t)
+
+	assert.NoError(t, s.Skill().Delete(skill.ID))
+
+	_ = s.Skill().Create(skill)
+	skill, _ = s.Skill().Find(skill.ID)
+	assert.NotNil(t, skill)
+
+	assert.NoError(t, s.Skill().Delete(skill.ID))
+	deletedSkill, err := s.Skill().Find(skill.ID)
+
+	assert.Error(t, err)
+	assert.Nil(t, deletedSkill)
+}
+
+func TestSkillRepository_DeleteCategory(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SkillsT)
+
+	s := sqlstore.New(db)
+	category := model.TestSkillCategory(t)
+
+	assert.NoError(t, s.Skill().DeleteCategory(category.ID))
+
+	_ = s.Skill().CreateCategory(category)
+	category, _ = s.Skill().FindCategory(category.ID)
+	assert.NotNil(t, category)
+
+	assert.NoError(t, s.Skill().DeleteCategory(category.ID))
+	deletedSkill, err := s.Skill().FindCategory(category.ID)
+
+	assert.Error(t, err)
+	assert.Nil(t, deletedSkill)
+}

@@ -82,3 +82,33 @@ func (r *SkillRepository) FindCategory(id int) (*model.SkillCategory, error) {
 
 	return sc, nil
 }
+
+// Update ...
+func (r *SkillRepository) Update(s *model.Skill) error {
+	_, err := r.store.Update(
+		UpdateQ+SkillsT+"SET name = $1, icon = $2, category_id = $3 WHERE id = $4", s.Name, s.Icon,
+		s.RefCategoryId, s.ID,
+	)
+
+	return err
+}
+
+// UpdateCategory ...
+func (r *SkillRepository) UpdateCategory(sc *model.SkillCategory) error {
+	_, err := r.store.Update(
+		UpdateQ+SkillCategoriesT+"SET name = $1, icon = $2 WHERE id = $3", sc.Name, sc.Icon, sc.ID,
+	)
+
+	return err
+}
+
+// Delete ...
+func (r *SkillRepository) Delete(id int) error {
+	_, err := r.store.Delete(DeleteQ+SkillsT+"WHERE id = $1", id)
+	return err
+}
+
+func (r *SkillRepository) DeleteCategory(id int) error {
+	_, err := r.store.Delete(DeleteQ+SkillCategoriesT+"WHERE id = $1", id)
+	return err
+}
