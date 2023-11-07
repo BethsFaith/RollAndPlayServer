@@ -52,7 +52,7 @@ func (s *server) configureRouter() {
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/who-am-i", s.handleWhoami()).Methods("GET")
 	private.HandleFunc("/skills", s.handleSkillCreate()).Methods("POST")
-	private.HandleFunc("/skill-category", s.handleSkillCreate()).Methods("POST")
+	private.HandleFunc("/skill-categories", s.handleSkillCategoryCreate()).Methods("POST")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {

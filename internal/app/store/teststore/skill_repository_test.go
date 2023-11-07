@@ -12,16 +12,12 @@ func TestSkillRepository_Create(t *testing.T) {
 	s := teststore.New()
 
 	sk := model.TestSkill(t)
-	err := s.Skill().Create(sk)
-	assert.EqualError(t, err, store.ErrorNotExistRef.Error())
-
-	c := model.TestSkillCategory(t)
-	_ = s.Skill().CreateCategory(c)
-
-	sk.CategoryId = c.ID
 
 	assert.NoError(t, s.Skill().Create(sk))
 	assert.NotNil(t, sk)
+
+	sk.CategoryId = 10
+	assert.EqualError(t, s.Skill().Create(sk), store.ErrorNotExistRef.Error())
 }
 
 func TestSkillRepository_CreateCategory(t *testing.T) {

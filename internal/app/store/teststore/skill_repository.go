@@ -16,9 +16,15 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 		return err
 	}
 
-	_, ok := r.categories[s.CategoryId]
-	if !ok {
-		return store.ErrorNotExistRef
+	if err := s.BeforeCreate(); err != nil {
+		return err
+	}
+
+	if s.RefCategoryId.Valid {
+		_, ok := r.categories[s.CategoryId]
+		if !ok {
+			return store.ErrorNotExistRef
+		}
 	}
 
 	s.ID = len(r.skills) + 1
