@@ -7,8 +7,9 @@ import (
 )
 
 type Store struct {
-	db             *sql.DB
-	userRepository *UserRepository
+	db              *sql.DB
+	userRepository  *UserRepository
+	skillRepository *SkillRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -41,7 +42,7 @@ func (s *Store) Update(queryStr string, parameters ...any) (sql.Result, error) {
 }
 
 func (s *Store) Delete(queryStr string, parameters ...any) (sql.Result, error) {
-	return s.db.Exec(queryStr, parameters)
+	return s.db.Exec(queryStr, parameters...)
 }
 
 func (s *Store) User() store.UserRepository {
@@ -54,4 +55,16 @@ func (s *Store) User() store.UserRepository {
 	}
 
 	return s.userRepository
+}
+
+func (s *Store) Skill() store.SkillRepository {
+	if s.skillRepository != nil {
+		return s.skillRepository
+	}
+
+	s.skillRepository = &SkillRepository{
+		store: s,
+	}
+
+	return s.skillRepository
 }

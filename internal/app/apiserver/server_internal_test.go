@@ -7,19 +7,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/exp/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestServer_AuthenticateUser(t *testing.T) {
-	env := "local"
-	logger := log.SetupLogger(env)
-	logger = logger.With(slog.String("env", env))
+	logger := log.TestLogger()
 
 	store := teststore.New()
 	u := model.TestUser(t)
@@ -44,9 +40,8 @@ func TestServer_AuthenticateUser(t *testing.T) {
 		},
 	}
 
-	secretKey := []byte("secret")
-	s := newServer(store, sessions.NewCookieStore(secretKey), logger)
-	sc := securecookie.New(secretKey, nil)
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
 	mw := s.authenticateUser(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -55,9 +50,11 @@ func TestServer_AuthenticateUser(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			rec := httptest.NewRecorder()
 			req, _ := http.NewRequest(http.MethodGet, "/", nil)
+
 			cookieStr, _ := sc.Encode(sessionName, tc.cookieValue)
 
 			req.Header.Set("Cookie", fmt.Sprintf("%s=%s", sessionName, cookieStr))
+
 			mw.ServeHTTP(rec, req)
 			assert.Equal(t, tc.expectedCode, rec.Code)
 		})
@@ -65,9 +62,7 @@ func TestServer_AuthenticateUser(t *testing.T) {
 }
 
 func TestServer_HandleUsersCreate(t *testing.T) {
-	env := "local"
-	logger := log.SetupLogger(env)
-	logger = logger.With(slog.String("env", env))
+	logger := log.TestLogger()
 
 	s := newServer(teststore.New(), sessions.NewCookieStore([]byte("secret")), logger)
 
@@ -113,9 +108,7 @@ func TestServer_HandleUsersCreate(t *testing.T) {
 }
 
 func TestServer_HandleSessionsCreate(t *testing.T) {
-	env := "local"
-	logger := log.SetupLogger(env)
-	logger = logger.With(slog.String("env", env))
+	logger := log.TestLogger()
 
 	u := model.TestUser(t)
 	store := teststore.New()

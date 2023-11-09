@@ -50,7 +50,13 @@ func (s *server) configureRouter() {
 	// /private/***
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
-	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
+	private.HandleFunc("/who-am-i", s.handleWhoami()).Methods("GET")
+	private.HandleFunc("/skills", s.handleSkillCreate()).Methods("POST")
+	private.HandleFunc("/skills", s.handleSkillUpdate()).Methods("PUT")
+	private.HandleFunc("/skills", s.handleSkillDelete()).Methods("DELETE")
+	private.HandleFunc("/skill-categories", s.handleSkillCategoryCreate()).Methods("POST")
+	private.HandleFunc("/skill-categories", s.handleSkillCategoryUpdate()).Methods("PUT")
+	private.HandleFunc("/skill-categories", s.handleSkillCategoryDelete()).Methods("DELETE")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {

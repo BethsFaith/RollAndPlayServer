@@ -22,7 +22,7 @@ func (r *UserRepository) Create(u *model.User) error {
 	}
 
 	return r.store.Create(
-		insertQ+usersT+usersP+"values ($1, $2) RETURNING id", u.Email, u.EncryptedPassword,
+		InsertQ+UsersT+UsersP+"values ($1, $2) RETURNING id", u.Email, u.EncryptedPassword,
 	).Scan(&u.ID)
 }
 
@@ -31,7 +31,7 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	u := &model.User{}
 
 	if err := r.store.SelectRow(
-		selectQ+usersT+"WHERE email = $1", email,
+		SelectQ+UsersT+"WHERE email = $1", email,
 	).Scan(
 		&u.ID,
 		&u.Email,
@@ -51,7 +51,7 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 	u := &model.User{}
 
 	if err := r.store.SelectRow(
-		selectQ+usersT+"WHERE id = $1", id,
+		SelectQ+UsersT+"WHERE id = $1", id,
 	).Scan(
 		&u.ID,
 		&u.Email,

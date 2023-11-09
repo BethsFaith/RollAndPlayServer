@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS public.Race_Bonuses;
 DROP TABLE IF EXISTS public.Character_Class_Bonuses;
-DROP TABLE IF EXISTS public.System_Skill;
+DROP TABLE IF EXISTS public.System_Skills;
 DROP TABLE IF EXISTS public.System_Classes;
 DROP TABLE IF EXISTS public.System_Races;
 DROP TABLE IF EXISTS public.System;
@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS public.Skills
     id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 0 MINVALUE 0 MAXVALUE 2147483646 CACHE 1 ),
     name VARCHAR(255) NOT NULL,
     icon VARCHAR(1024),
-	category_id INTEGER,
-	
+    category_id INTEGER REFERENCES Skill_Categories(id) ON DELETE SET NULL,
+
     CONSTRAINT Skills_pkey PRIMARY KEY (id),
-	FOREIGN KEY (category_id) REFERENCES Skill_Categories(id) ON DELETE SET NULL
+    CONSTRAINT Skills_ukey UNIQUE (name, category_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.Races 
