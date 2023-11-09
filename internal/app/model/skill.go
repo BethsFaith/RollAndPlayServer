@@ -38,7 +38,7 @@ func (s *Skill) Validate() error {
 	)
 }
 
-func (s *Skill) BeforeCreate() error {
+func (s *Skill) BeforeQuery() error {
 	if s.CategoryId > 0 {
 		err := s.RefCategoryId.Scan(s.CategoryId)
 		return err

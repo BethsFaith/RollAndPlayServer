@@ -63,3 +63,78 @@ func TestSkillRepository_FindCategory(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, c)
 }
+
+func TestSkillRepository_Update(t *testing.T) {
+	s := teststore.New()
+
+	skill := model.TestSkill(t)
+	_ = s.Skill().Create(skill)
+
+	category := model.TestSkillCategory(t)
+	_ = s.Skill().CreateCategory(category)
+
+	icon := "NewIcon"
+	name := "NewName"
+	skill.Icon = icon
+	skill.Name = name
+	skill.ID = category.ID
+
+	err := s.Skill().Update(skill)
+	assert.NoError(t, err)
+
+	var updatedSkill *model.Skill
+	updatedSkill, err = s.Skill().Find(skill.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedSkill)
+	assert.Equal(t, updatedSkill.Icon, icon)
+	assert.Equal(t, updatedSkill.Name, name)
+	assert.Equal(t, updatedSkill.ID, category.ID)
+}
+
+func TestSkillRepository_UpdateCategory(t *testing.T) {
+	s := teststore.New()
+
+	c := model.TestSkillCategory(t)
+	_ = s.Skill().CreateCategory(c)
+
+	icon := "NewIcon"
+	name := "NewName"
+	c.Icon = icon
+	c.Name = name
+
+	err := s.Skill().UpdateCategory(c)
+	assert.NoError(t, err)
+
+	var updatedCategory *model.SkillCategory
+	updatedCategory, err = s.Skill().FindCategory(c.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedCategory)
+	assert.Equal(t, updatedCategory.Icon, icon)
+	assert.Equal(t, updatedCategory.Name, name)
+}
+
+func TestSkillRepository_Delete(t *testing.T) {
+	s := teststore.New()
+
+	skill := model.TestSkill(t)
+	_ = s.Skill().Create(skill)
+
+	err := s.Skill().Delete(skill.ID)
+	assert.NoError(t, err)
+
+	_, err = s.Skill().Find(skill.ID)
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+}
+
+func TestSkillRepository_DeleteCategory(t *testing.T) {
+	s := teststore.New()
+
+	category := model.TestSkillCategory(t)
+	_ = s.Skill().CreateCategory(category)
+
+	err := s.Skill().DeleteCategory(category.ID)
+	assert.NoError(t, err)
+
+	_, err = s.Skill().FindCategory(category.ID)
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+}

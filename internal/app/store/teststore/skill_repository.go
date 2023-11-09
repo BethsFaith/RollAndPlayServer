@@ -16,10 +16,6 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 		return err
 	}
 
-	if err := s.BeforeCreate(); err != nil {
-		return err
-	}
-
 	if s.RefCategoryId.Valid {
 		_, ok := r.categories[s.CategoryId]
 		if !ok {
@@ -58,4 +54,62 @@ func (r *SkillRepository) FindCategory(id int) (*model.SkillCategory, error) {
 		return nil, store.ErrorRecordNotFound
 	}
 	return c, nil
+}
+
+func (r *SkillRepository) Update(skill *model.Skill) error {
+	s, ok := r.skills[skill.ID]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	err := s.Validate()
+	if err != nil {
+		return err
+	}
+	if skill.RefCategoryId.Valid {
+		_, ok = r.categories[skill.CategoryId]
+		if !ok {
+			return store.ErrorNotExistRef
+		}
+	}
+
+	s.Name = skill.Name
+	s.Icon = skill.Icon
+	s.CategoryId = skill.CategoryId
+
+	return nil
+}
+
+func (r *SkillRepository) UpdateCategory(category *model.SkillCategory) error {
+	s, ok := r.categories[category.ID]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	s.Name = category.Name
+	s.Icon = category.Icon
+
+	return nil
+}
+
+func (r *SkillRepository) Delete(id int) error {
+	_, ok := r.skills[id]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	delete(r.skills, id)
+
+	return nil
+}
+
+func (r *SkillRepository) DeleteCategory(id int) error {
+	_, ok := r.categories[id]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	delete(r.categories, id)
+
+	return nil
 }

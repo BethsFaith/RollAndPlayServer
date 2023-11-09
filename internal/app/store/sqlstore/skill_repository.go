@@ -16,7 +16,7 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 	if err := s.Validate(); err != nil {
 		return err
 	}
-	if err := s.BeforeCreate(); err != nil {
+	if err := s.BeforeQuery(); err != nil {
 		return err
 	}
 
@@ -85,6 +85,13 @@ func (r *SkillRepository) FindCategory(id int) (*model.SkillCategory, error) {
 
 // Update ...
 func (r *SkillRepository) Update(s *model.Skill) error {
+	if err := s.Validate(); err != nil {
+		return err
+	}
+	if err := s.BeforeQuery(); err != nil {
+		return err
+	}
+
 	_, err := r.store.Update(
 		UpdateQ+SkillsT+"SET name = $1, icon = $2, category_id = $3 WHERE id = $4", s.Name, s.Icon,
 		s.RefCategoryId, s.ID,
