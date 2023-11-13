@@ -34,3 +34,7 @@ func (a *Action) BeforeInsertOrUpdate() error {
 		return err
 	}
 }
+
+func (a *Action) AfterScan() {
+	getDefaultOrValue(0, a.RefSkillId)
+}
