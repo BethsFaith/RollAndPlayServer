@@ -8,6 +8,7 @@ import (
 type Store struct {
 	userRepository  *UserRepository
 	skillRepository *SkillRepository
+	raceRepository  *RaceRepository
 }
 
 func New() *Store {
@@ -39,4 +40,17 @@ func (s *Store) Skill() store.SkillRepository {
 	}
 
 	return s.skillRepository
+}
+
+func (s *Store) Race() store.RaceRepository {
+	if s.raceRepository != nil {
+		return s.raceRepository
+	}
+
+	s.raceRepository = &RaceRepository{
+		store: s,
+		races: make(map[int]*model.Race),
+	}
+
+	return s.raceRepository
 }

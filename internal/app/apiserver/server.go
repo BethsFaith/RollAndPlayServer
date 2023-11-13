@@ -57,6 +57,9 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryCreate()).Methods("POST")
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryUpdate()).Methods("PUT")
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryDelete()).Methods("DELETE")
+	private.HandleFunc("/races", s.handleRaceCreate()).Methods("POST")
+	private.HandleFunc("/races", s.handleRaceUpdate()).Methods("PUT")
+	private.HandleFunc("/races", s.handleRaceDelete()).Methods("DELETE")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {

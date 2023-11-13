@@ -13,6 +13,6 @@ type Race struct {
 func (r *Race) Validate() error {
 	return validation.ValidateStruct(
 		r,
-		validation.Field(&r.Name, validation.Required),
+		validation.Field(&r.Name, validation.Required, validation.Length(1, 100)),
 	)
 }
