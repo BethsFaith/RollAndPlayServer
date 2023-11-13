@@ -60,6 +60,9 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/races", s.handleRaceCreate()).Methods("POST")
 	private.HandleFunc("/races", s.handleRaceUpdate()).Methods("PUT")
 	private.HandleFunc("/races", s.handleRaceDelete()).Methods("DELETE")
+	private.HandleFunc("/actions", s.handleActionCreate()).Methods("POST")
+	private.HandleFunc("/actions", s.handleActionUpdate()).Methods("PUT")
+	private.HandleFunc("/actions", s.handleActionDelete()).Methods("DELETE")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
