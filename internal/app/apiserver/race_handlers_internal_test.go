@@ -1,0 +1,220 @@
+package apiserver
+
+import (
+	"RnpServer/internal/app/model"
+	"RnpServer/internal/app/store/teststore"
+	"RnpServer/internal/log"
+	"bytes"
+	"encoding/json"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+func TestServer_handleRaceCreate(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	testCases := []struct {
+		name         string
+		race         map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			race: map[string]interface{}{
+				"name":  "Name",
+				"model": "Model.path",
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "no valid",
+			race: map[string]interface{}{
+				"name":  "",
+				"model": "Model.path",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "no valid",
+			race: map[string]interface{}{
+				"model": "Model.path",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "valid",
+			race: map[string]interface{}{
+				"name": "Name",
+			},
+			expectedCode: http.StatusCreated,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.race)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodPost, "/private/races", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}
+
+func TestServer_handleRaceUpdate(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	race := model.TestRace(t)
+	_ = store.Race().Create(race)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	testCases := []struct {
+		name         string
+		race         map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			race: map[string]interface{}{
+				"id":    race.ID,
+				"name":  "NewName",
+				"model": "NewModel.path",
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "valid",
+			race: map[string]interface{}{
+				"id":    race.ID,
+				"name":  "NewName",
+				"model": "",
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			race: map[string]interface{}{
+				"id":    race.ID,
+				"name":  "",
+				"model": "",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "valid",
+			race: map[string]interface{}{
+				"id":    race.ID,
+				"name":  "11",
+				"model": "",
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			race: map[string]interface{}{
+				"id":    1000,
+				"name":  "11",
+				"model": "",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.race)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodPut, "/private/races", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}
+
+func TestServer_handleRaceDelete(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	race := model.TestRace(t)
+	_ = store.Race().Create(race)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	testCases := []struct {
+		name         string
+		race         map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			race: map[string]interface{}{
+				"id": race.ID,
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			race: map[string]interface{}{
+				"id": -1,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.race)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodDelete, "/private/races", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}

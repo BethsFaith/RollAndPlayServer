@@ -20,3 +20,10 @@ type SkillRepository interface {
 	Delete(id int) error
 	DeleteCategory(id int) error
 }
+
+type RaceRepository interface {
+	Create(*model.Race) error
+	Find(int) (*model.Race, error)
+	Update(*model.Race) error
+	Delete(id int) error
+}

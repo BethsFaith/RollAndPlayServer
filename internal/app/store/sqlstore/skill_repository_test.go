@@ -143,7 +143,7 @@ func TestSkillRepository_Delete(t *testing.T) {
 func TestSkillRepository_DeleteCategory(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillsT)
+	defer teardown(sqlstore.SkillCategoriesT)
 
 	s := sqlstore.New(db)
 	category := model.TestSkillCategory(t)

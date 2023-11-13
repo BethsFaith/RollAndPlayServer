@@ -16,7 +16,7 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 	if err := s.Validate(); err != nil {
 		return err
 	}
-	if err := s.BeforeQuery(); err != nil {
+	if err := s.BeforeInsertOrUpdate(); err != nil {
 		return err
 	}
 
@@ -88,7 +88,7 @@ func (r *SkillRepository) Update(s *model.Skill) error {
 	if err := s.Validate(); err != nil {
 		return err
 	}
-	if err := s.BeforeQuery(); err != nil {
+	if err := s.BeforeInsertOrUpdate(); err != nil {
 		return err
 	}
 
