@@ -27,3 +27,10 @@ type RaceRepository interface {
 	Update(*model.Race) error
 	Delete(id int) error
 }
+
+type ActionRepository interface {
+	Create(*model.Action) error
+	Find(int) (*model.Action, error)
+	Update(*model.Action) error
+	Delete(id int) error
+}

@@ -34,3 +34,13 @@ func TestRace(t *testing.T) *Race {
 		Model: "path/model",
 	}
 }
+
+func TestAction(t *testing.T) *Action {
+	t.Helper()
+	return &Action{
+		Name:    "race",
+		Icon:    "path/icon",
+		SkillId: 0,
+		Points:  0,
+	}
+}
