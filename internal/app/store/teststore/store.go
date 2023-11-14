@@ -10,6 +10,7 @@ type Store struct {
 	skillRepository  *SkillRepository
 	raceRepository   *RaceRepository
 	actionRepository *ActionRepository
+	classRepository  *CharacterClassRepository
 }
 
 func New() *Store {
@@ -67,4 +68,17 @@ func (s *Store) Action() store.ActionRepository {
 	}
 
 	return s.actionRepository
+}
+
+func (s *Store) CharacterClass() store.CharacterClassRepository {
+	if s.classRepository != nil {
+		return s.classRepository
+	}
+
+	s.classRepository = &CharacterClassRepository{
+		store:   s,
+		classes: make(map[int]*model.CharacterClass),
+	}
+
+	return s.classRepository
 }

@@ -51,18 +51,26 @@ func (s *server) configureRouter() {
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/who-am-i", s.handleWhoami()).Methods("GET")
+
 	private.HandleFunc("/skills", s.handleSkillCreate()).Methods("POST")
 	private.HandleFunc("/skills", s.handleSkillUpdate()).Methods("PUT")
 	private.HandleFunc("/skills", s.handleSkillDelete()).Methods("DELETE")
+
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryCreate()).Methods("POST")
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryUpdate()).Methods("PUT")
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryDelete()).Methods("DELETE")
+
 	private.HandleFunc("/races", s.handleRaceCreate()).Methods("POST")
 	private.HandleFunc("/races", s.handleRaceUpdate()).Methods("PUT")
 	private.HandleFunc("/races", s.handleRaceDelete()).Methods("DELETE")
+
 	private.HandleFunc("/actions", s.handleActionCreate()).Methods("POST")
 	private.HandleFunc("/actions", s.handleActionUpdate()).Methods("PUT")
 	private.HandleFunc("/actions", s.handleActionDelete()).Methods("DELETE")
+
+	private.HandleFunc("/classes", s.handleClassCreate()).Methods("POST")
+	private.HandleFunc("/classes", s.handleClassUpdate()).Methods("PUT")
+	private.HandleFunc("/classes", s.handleClassDelete()).Methods("DELETE")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
