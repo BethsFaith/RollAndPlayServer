@@ -52,3 +52,21 @@ func TestCharacterClass(t *testing.T) *CharacterClass {
 		Icon: "path/icon",
 	}
 }
+
+func TestRaceBonus(t *testing.T) *RaceBonus {
+	t.Helper()
+	return &RaceBonus{
+		RaceId:  1,
+		SkillId: 1,
+		Bonus:   1,
+	}
+}
+
+func TestCharacterClassBonus(t *testing.T) *CharacterClassBonus {
+	t.Helper()
+	return &CharacterClassBonus{
+		ClassId: 1,
+		SkillId: 1,
+		Bonus:   1,
+	}
+}
