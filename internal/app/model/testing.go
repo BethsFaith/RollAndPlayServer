@@ -44,3 +44,11 @@ func TestAction(t *testing.T) *Action {
 		Points:  0,
 	}
 }
+
+func TestCharacterClass(t *testing.T) *CharacterClass {
+	t.Helper()
+	return &CharacterClass{
+		Name: "race",
+		Icon: "path/icon",
+	}
+}

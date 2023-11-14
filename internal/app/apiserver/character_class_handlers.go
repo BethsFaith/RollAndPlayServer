@@ -1,0 +1,98 @@
+package apiserver
+
+import (
+	"RnpServer/internal/app/model"
+	"RnpServer/internal/app/store"
+	"encoding/json"
+	"net/http"
+)
+
+func (s *server) handleClassCreate() http.HandlerFunc {
+	type request struct {
+		Name string `json:"name"`
+		Icon string `json:"icon"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		class := &model.CharacterClass{
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+		if err := s.store.CharacterClass().Create(class); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusCreated, class)
+	}
+}
+
+func (s *server) handleClassUpdate() http.HandlerFunc {
+	type request struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Icon string `json:"icon"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		class := &model.CharacterClass{
+			ID:   req.ID,
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+
+		oldClassData, err := s.store.CharacterClass().Find(class.ID)
+		if err != nil || oldClassData == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		if err := s.store.CharacterClass().Update(class); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, class)
+	}
+}
+
+func (s *server) handleClassDelete() http.HandlerFunc {
+	type request struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Icon string `json:"icon"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		class := &model.CharacterClass{
+			ID:   req.ID,
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+
+		if err := s.store.CharacterClass().Delete(class.ID); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, class)
+	}
+}

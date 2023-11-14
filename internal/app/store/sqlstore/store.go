@@ -7,11 +7,12 @@ import (
 )
 
 type Store struct {
-	db               *sql.DB
-	userRepository   *UserRepository
-	skillRepository  *SkillRepository
-	raceRepository   *RaceRepository
-	actionRepository *ActionRepository
+	db                       *sql.DB
+	userRepository           *UserRepository
+	skillRepository          *SkillRepository
+	raceRepository           *RaceRepository
+	actionRepository         *ActionRepository
+	characterClassRepository *CharacterClassRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -93,4 +94,16 @@ func (s *Store) Action() store.ActionRepository {
 	}
 
 	return s.actionRepository
+}
+
+func (s *Store) CharacterClass() store.CharacterClassRepository {
+	if s.characterClassRepository != nil {
+		return s.characterClassRepository
+	}
+
+	s.characterClassRepository = &CharacterClassRepository{
+		store: s,
+	}
+
+	return s.characterClassRepository
 }

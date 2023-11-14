@@ -34,3 +34,10 @@ type ActionRepository interface {
 	Update(*model.Action) error
 	Delete(id int) error
 }
+
+type CharacterClassRepository interface {
+	Create(*model.CharacterClass) error
+	Find(int) (*model.CharacterClass, error)
+	Update(*model.CharacterClass) error
+	Delete(id int) error
+}

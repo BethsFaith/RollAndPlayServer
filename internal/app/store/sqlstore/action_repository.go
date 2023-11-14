@@ -11,6 +11,7 @@ type ActionRepository struct {
 	store *Store
 }
 
+// Create ...
 func (r *ActionRepository) Create(a *model.Action) error {
 	if err := a.Validate(); err != nil {
 		return err
