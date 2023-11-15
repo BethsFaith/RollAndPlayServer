@@ -41,3 +41,17 @@ type CharacterClassRepository interface {
 	Update(*model.CharacterClass) error
 	Delete(id int) error
 }
+
+type RaceBonusRepository interface {
+	Create(*model.RaceBonus) error
+	Find(int, int) (*model.RaceBonus, error)
+	Update(*model.RaceBonus) error
+	Delete(int, int) error
+}
+
+type CharacterClassBonusRepository interface {
+	Create(*model.CharacterClassBonus) error
+	Find(int, int) (*model.CharacterClassBonus, error)
+	Update(*model.CharacterClassBonus) error
+	Delete(int, int) error
+}

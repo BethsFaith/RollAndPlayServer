@@ -6,11 +6,13 @@ import (
 )
 
 type Store struct {
-	userRepository   *UserRepository
-	skillRepository  *SkillRepository
-	raceRepository   *RaceRepository
-	actionRepository *ActionRepository
-	classRepository  *CharacterClassRepository
+	userRepository                *UserRepository
+	skillRepository               *SkillRepository
+	raceRepository                *RaceRepository
+	actionRepository              *ActionRepository
+	classRepository               *CharacterClassRepository
+	raceBonusRepository           *RaceBonusRepository
+	characterClassBonusRepository *CharacterClassBonusRepository
 }
 
 func New() *Store {
@@ -81,4 +83,30 @@ func (s *Store) CharacterClass() store.CharacterClassRepository {
 	}
 
 	return s.classRepository
+}
+
+func (s *Store) RaceBonus() store.RaceBonusRepository {
+	if s.raceBonusRepository != nil {
+		return s.raceBonusRepository
+	}
+
+	s.raceBonusRepository = &RaceBonusRepository{
+		store:   s,
+		bonuses: make(map[RaceBonusKey]*model.RaceBonus),
+	}
+
+	return s.raceBonusRepository
+}
+
+func (s *Store) CharacterClassBonus() store.CharacterClassBonusRepository {
+	if s.characterClassBonusRepository != nil {
+		return s.characterClassBonusRepository
+	}
+
+	s.characterClassBonusRepository = &CharacterClassBonusRepository{
+		store:   s,
+		bonuses: make(map[CharacterClassBonusKey]*model.CharacterClassBonus),
+	}
+
+	return s.characterClassBonusRepository
 }

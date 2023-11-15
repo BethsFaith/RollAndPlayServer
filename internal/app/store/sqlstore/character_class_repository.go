@@ -17,7 +17,7 @@ func (r *CharacterClassRepository) Create(cc *model.CharacterClass) error {
 		return err
 	}
 
-	return r.store.Create(
+	return r.store.CreateRetId(
 		InsertQ+CharacterClassT+CharacterClassesP+"values ($1, $2) RETURNING id", cc.Name, cc.Icon,
 	).Scan(&cc.ID)
 }
