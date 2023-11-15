@@ -218,3 +218,218 @@ func TestServer_handleRaceDelete(t *testing.T) {
 		})
 	}
 }
+
+func TestServer_handleRaceBonusCreate(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	race := model.TestRace(t)
+	skill := model.TestSkill(t)
+
+	_ = store.Race().Create(race)
+	_ = store.Skill().Create(skill)
+
+	bonus := model.TestRaceBonus(t)
+	bonus.RaceId = race.ID
+	bonus.SkillId = skill.ID
+
+	testCases := []struct {
+		name         string
+		bonus        map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": bonus.SkillId,
+				"bonus":    bonus.Bonus,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "no valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": bonus.SkillId,
+				"bonus":    0,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "no valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": -1,
+				"bonus":    bonus.Bonus,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "no valid",
+			bonus: map[string]interface{}{
+				"race_id":  -1,
+				"skill_id": bonus.SkillId,
+				"bonus":    bonus.Bonus,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.bonus)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodPost, "/private/races/bonuses", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}
+
+func TestServer_handleRaceBonusUpdate(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	race := model.TestRace(t)
+	skill := model.TestSkill(t)
+
+	_ = store.Race().Create(race)
+	_ = store.Skill().Create(skill)
+
+	bonus := model.TestRaceBonus(t)
+	bonus.RaceId = race.ID
+	bonus.SkillId = skill.ID
+
+	_ = store.RaceBonus().Create(bonus)
+
+	testCases := []struct {
+		name         string
+		bonus        map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": bonus.SkillId,
+				"bonus":    bonus.Bonus + 2,
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": bonus.SkillId,
+				"bonus":    0,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.bonus)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodPut, "/private/races/bonuses", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}
+
+func TestServer_handleRaceBonusDelete(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	race := model.TestRace(t)
+	skill := model.TestSkill(t)
+
+	_ = store.Race().Create(race)
+	_ = store.Skill().Create(skill)
+
+	bonus := model.TestRaceBonus(t)
+	bonus.RaceId = race.ID
+	bonus.SkillId = skill.ID
+
+	_ = store.RaceBonus().Create(bonus)
+
+	testCases := []struct {
+		name         string
+		bonus        map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": bonus.SkillId,
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			bonus: map[string]interface{}{
+				"race_id":  bonus.RaceId,
+				"skill_id": -1,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.bonus)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodDelete, "/private/races/bonuses", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}

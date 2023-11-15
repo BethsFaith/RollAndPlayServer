@@ -53,8 +53,8 @@ func (s *server) handleRaceUpdate() http.HandlerFunc {
 			Model: req.Model,
 		}
 
-		oldSkillData, err := s.store.Race().Find(race.ID)
-		if err != nil || oldSkillData == nil {
+		foundRace, err := s.store.Race().Find(race.ID)
+		if err != nil || foundRace == nil {
 			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
 			return
 		}
@@ -87,11 +87,116 @@ func (s *server) handleRaceDelete() http.HandlerFunc {
 			Name:  req.Name,
 			Model: req.Model,
 		}
+
+		foundRace, err := s.store.Race().Find(race.ID)
+		if err != nil || foundRace == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
 		if err := s.store.Race().Delete(race.ID); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
 			return
 		}
 
 		s.respond(w, http.StatusOK, race)
+	}
+}
+
+func (s *server) handleRaceBonusCreate() http.HandlerFunc {
+	type request struct {
+		RaceId  int `json:"race_id"`
+		SkillId int `json:"skill_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonus := &model.RaceBonus{
+			RaceId:  req.RaceId,
+			SkillId: req.SkillId,
+			Bonus:   req.Bonus,
+		}
+		if err := s.store.RaceBonus().Create(bonus); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusCreated, bonus)
+	}
+}
+
+func (s *server) handleRaceBonusUpdate() http.HandlerFunc {
+	type request struct {
+		RaceId  int `json:"race_id"`
+		SkillId int `json:"skill_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonus := &model.RaceBonus{
+			RaceId:  req.RaceId,
+			SkillId: req.SkillId,
+			Bonus:   req.Bonus,
+		}
+
+		oldBonusData, err := s.store.RaceBonus().Find(bonus.RaceId, bonus.SkillId)
+		if err != nil || oldBonusData == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		if err := s.store.RaceBonus().Update(bonus); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonus)
+	}
+}
+
+func (s *server) handleRaceBonusDelete() http.HandlerFunc {
+	type request struct {
+		RaceId  int `json:"race_id"`
+		SkillId int `json:"skill_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonus := &model.RaceBonus{
+			RaceId:  req.RaceId,
+			SkillId: req.SkillId,
+			Bonus:   req.Bonus,
+		}
+
+		foundBonus, err := s.store.RaceBonus().Find(bonus.RaceId, bonus.SkillId)
+		if err != nil || foundBonus == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		if err := s.store.RaceBonus().Delete(bonus.RaceId, bonus.SkillId); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonus)
 	}
 }

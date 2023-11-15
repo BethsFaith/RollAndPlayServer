@@ -8,4 +8,5 @@ type Store interface {
 	Action() ActionRepository
 	CharacterClass() CharacterClassRepository
 	RaceBonus() RaceBonusRepository
+	CharacterClassBonus() CharacterClassBonusRepository
 }

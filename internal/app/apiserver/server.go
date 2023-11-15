@@ -63,6 +63,9 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/races", s.handleRaceCreate()).Methods("POST")
 	private.HandleFunc("/races", s.handleRaceUpdate()).Methods("PUT")
 	private.HandleFunc("/races", s.handleRaceDelete()).Methods("DELETE")
+	private.HandleFunc("/races/bonuses", s.handleRaceBonusCreate()).Methods("POST")
+	private.HandleFunc("/races/bonuses", s.handleRaceBonusUpdate()).Methods("PUT")
+	private.HandleFunc("/races/bonuses", s.handleRaceBonusDelete()).Methods("DELETE")
 
 	private.HandleFunc("/actions", s.handleActionCreate()).Methods("POST")
 	private.HandleFunc("/actions", s.handleActionUpdate()).Methods("PUT")
@@ -71,6 +74,10 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/classes", s.handleClassCreate()).Methods("POST")
 	private.HandleFunc("/classes", s.handleClassUpdate()).Methods("PUT")
 	private.HandleFunc("/classes", s.handleClassDelete()).Methods("DELETE")
+
+	private.HandleFunc("/classes/bonuses", s.handleClassBonusCreate()).Methods("POST")
+	private.HandleFunc("/classes/bonuses", s.handleClassBonusUpdate()).Methods("PUT")
+	private.HandleFunc("/classes/bonuses", s.handleClassBonusDelete()).Methods("DELETE")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
