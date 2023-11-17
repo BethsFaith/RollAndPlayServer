@@ -131,6 +131,29 @@ func (s *server) handleRaceBonusCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleRaceBonuses() http.HandlerFunc {
+	type request struct {
+		RaceId int `json:"race_id"`
+		Bonus  int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonuses, err := s.store.RaceBonus().FindByRaceId(req.RaceId)
+		if err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonuses)
+	}
+}
+
 func (s *server) handleRaceBonusUpdate() http.HandlerFunc {
 	type request struct {
 		RaceId  int `json:"race_id"`

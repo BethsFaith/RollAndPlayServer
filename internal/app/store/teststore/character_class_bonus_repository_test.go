@@ -31,6 +31,23 @@ func TestCharacterClassBonusRepository_Find(t *testing.T) {
 	assert.NotNil(t, cb)
 }
 
+func TestCharacterClassBonusRepository_FindByClassId(t *testing.T) {
+	s := teststore.New()
+
+	id := 1
+	_, err := s.CharacterClassBonus().Find(id, id)
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+
+	cb := model.TestCharacterClassBonus(t)
+	_ = s.CharacterClassBonus().Create(cb)
+	cb.SkillId = 2
+	_ = s.CharacterClassBonus().Create(cb)
+
+	cb, err = s.CharacterClassBonus().Find(cb.ClassId, cb.SkillId)
+	assert.NoError(t, err)
+	assert.NotNil(t, cb)
+}
+
 func TestCharacterClassBonusRepository_Update(t *testing.T) {
 	s := teststore.New()
 

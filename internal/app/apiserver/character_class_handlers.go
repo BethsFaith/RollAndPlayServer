@@ -125,6 +125,29 @@ func (s *server) handleClassBonusCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleClassBonuses() http.HandlerFunc {
+	type request struct {
+		ClassId int `json:"class_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonuses, err := s.store.CharacterClassBonus().FindByClassId(req.ClassId)
+		if err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonuses)
+	}
+}
+
 func (s *server) handleClassBonusUpdate() http.HandlerFunc {
 	type request struct {
 		ClassId int `json:"class_id"`

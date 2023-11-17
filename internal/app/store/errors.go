@@ -4,7 +4,7 @@ import "errors"
 
 var (
 	// ErrorRecordNotFound ...
-	ErrorRecordNotFound = errors.New("record not found")
+	ErrorRecordNotFound = errors.New("record(s) not found")
 	// ErrorNotExistRef ...
 	ErrorNotExistRef = errors.New("given reference doesn't exist")
 )

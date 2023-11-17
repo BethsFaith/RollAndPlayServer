@@ -46,7 +46,6 @@ type RaceBonusRepository interface {
 	Create(*model.RaceBonus) error
 	Find(int, int) (*model.RaceBonus, error)
 	FindByRaceId(int) ([]*model.RaceBonus, error)
-	FindBySkillId(int) ([]*model.RaceBonus, error)
 	Update(*model.RaceBonus) error
 	Delete(int, int) error
 }
@@ -55,7 +54,6 @@ type CharacterClassBonusRepository interface {
 	Create(*model.CharacterClassBonus) error
 	Find(int, int) (*model.CharacterClassBonus, error)
 	FindByClassId(int) ([]*model.CharacterClassBonus, error)
-	FindBySkillId(int) ([]*model.CharacterClassBonus, error)
 	Update(*model.CharacterClassBonus) error
 	Delete(int, int) error
 }

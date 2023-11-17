@@ -41,6 +41,22 @@ func (r *CharacterClassBonusRepository) Find(classId int, skillId int) (*model.C
 	return cb, nil
 }
 
+func (r *CharacterClassBonusRepository) FindByClassId(classId int) ([]*model.CharacterClassBonus, error) {
+	var bonuses []*model.CharacterClassBonus
+
+	for key, value := range r.bonuses {
+		if key.classId == classId {
+			bonuses = append(bonuses, value)
+		}
+	}
+
+	if len(bonuses) == 0 {
+		return nil, store.ErrorRecordNotFound
+	}
+
+	return bonuses, nil
+}
+
 // Update ...
 func (r *CharacterClassBonusRepository) Update(cb *model.CharacterClassBonus) error {
 	if err := cb.Validate(); err != nil {

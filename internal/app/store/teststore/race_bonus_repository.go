@@ -41,6 +41,23 @@ func (r *RaceBonusRepository) Find(raceId int, skillId int) (*model.RaceBonus, e
 	return rb, nil
 }
 
+// FindByRaceId ...
+func (r *RaceBonusRepository) FindByRaceId(raceId int) ([]*model.RaceBonus, error) {
+	var bonuses []*model.RaceBonus
+
+	for key, value := range r.bonuses {
+		if key.raceId == raceId {
+			bonuses = append(bonuses, value)
+		}
+	}
+
+	if len(bonuses) == 0 {
+		return nil, store.ErrorRecordNotFound
+	}
+
+	return bonuses, nil
+}
+
 // Update ...
 func (r *RaceBonusRepository) Update(rb *model.RaceBonus) error {
 	if err := rb.Validate(); err != nil {

@@ -296,6 +296,75 @@ func TestServer_handleClassBonusCreate(t *testing.T) {
 	}
 }
 
+func TestServer_handleClassBonuses(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	class := model.TestCharacterClass(t)
+	skill := model.TestSkill(t)
+	skill2 := model.TestSkill(t)
+	skill2.Name = "name2"
+
+	_ = store.CharacterClass().Create(class)
+	_ = store.Skill().Create(skill)
+	_ = store.Skill().Create(skill2)
+
+	bonus := model.TestCharacterClassBonus(t)
+	bonus2 := model.TestCharacterClassBonus(t)
+	bonus.ClassId = class.ID
+	bonus.SkillId = skill.ID
+	bonus2.ClassId = class.ID
+	bonus2.SkillId = skill2.ID
+	_ = store.CharacterClassBonus().Create(bonus)
+	_ = store.CharacterClassBonus().Create(bonus2)
+
+	testCases := []struct {
+		name         string
+		bonus        map[string]interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			bonus: map[string]interface{}{
+				"class_id": bonus.ClassId,
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			bonus: map[string]interface{}{
+				"class_id": -1,
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.bonus)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodGet, "/private/classes/bonuses", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}
+
 func TestServer_handleClassBonusUpdate(t *testing.T) {
 	logger := log.TestLogger()
 

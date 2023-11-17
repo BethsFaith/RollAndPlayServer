@@ -31,6 +31,23 @@ func TestRaceBonusRepository_Find(t *testing.T) {
 	assert.NotNil(t, r)
 }
 
+func TestRaceBonusRepository_FindByRaceId(t *testing.T) {
+	s := teststore.New()
+
+	id := 1
+	_, err := s.RaceBonus().Find(id, id)
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+
+	r := model.TestRaceBonus(t)
+	_ = s.RaceBonus().Create(r)
+	r.SkillId = 2
+	_ = s.RaceBonus().Create(r)
+
+	bonuses, err := s.RaceBonus().FindByRaceId(r.RaceId)
+	assert.NoError(t, err)
+	assert.NotNil(t, bonuses)
+}
+
 func TestRaceBonusRepository_Update(t *testing.T) {
 	s := teststore.New()
 
