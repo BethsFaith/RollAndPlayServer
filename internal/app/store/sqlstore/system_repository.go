@@ -40,7 +40,7 @@ func (r *SystemRepository) Find(id int) (*model.System, error) {
 	return s, nil
 }
 
-func (r *SystemRepository) SelectComponent(id int, table string) ([]*model.SystemComponent, error) {
+func (r *SystemRepository) selectComponent(id int, table string) ([]*model.SystemComponent, error) {
 	var components []*model.SystemComponent
 
 	rRows, err := r.store.SelectRows(
@@ -90,7 +90,7 @@ func (r *SystemRepository) AddRace(id int, raceId int) ([]*model.Race, error) {
 		return nil, err
 	}
 
-	components, err := r.SelectComponent(id, SystemRacesT)
+	components, err := r.selectComponent(id, SystemRacesT)
 
 	var races []*model.Race
 	for _, value := range components {
@@ -116,7 +116,7 @@ func (r *SystemRepository) AddSkillCategory(id int, categoryId int) ([]*model.Sk
 		return nil, err
 	}
 
-	components, err := r.SelectComponent(id, SystemSkillsT)
+	components, err := r.selectComponent(id, SystemSkillsT)
 
 	var categories []*model.SkillCategory
 	for _, value := range components {
@@ -142,7 +142,7 @@ func (r *SystemRepository) AddCharacterClass(id int, categoryId int) ([]*model.C
 		return nil, err
 	}
 
-	components, err := r.SelectComponent(id, SystemClassesT)
+	components, err := r.selectComponent(id, SystemClassesT)
 
 	var categories []*model.CharacterClass
 	for _, value := range components {

@@ -64,7 +64,6 @@ type SystemRepository interface {
 	AddRace(int, int) ([]*model.Race, error)
 	AddSkillCategory(int, int) ([]*model.SkillCategory, error)
 	AddCharacterClass(int, int) ([]*model.CharacterClass, error)
-	SelectComponent(int, string) ([]*model.SystemComponent, error)
 	Update(*model.System) error
 	Delete(int) error
 }
