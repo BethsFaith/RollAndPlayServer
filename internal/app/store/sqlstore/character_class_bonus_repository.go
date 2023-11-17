@@ -46,6 +46,56 @@ func (r *CharacterClassBonusRepository) Find(classId int, skillId int) (*model.C
 	return cc, nil
 }
 
+// FindByClassId ...
+func (r *CharacterClassBonusRepository) FindByClassId(classId int) ([]*model.CharacterClassBonus, error) {
+	var bonuses []*model.CharacterClassBonus
+
+	bRows, err := r.store.SelectRows(
+		SelectQ+CharacterClassBonusesT+"WHERE class_id = $1", classId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.CharacterClassBonus{}
+
+		err := bRows.Scan(&cc.ClassId, &cc.SkillId, &cc.Bonus)
+		if err != nil {
+			return nil, err
+		}
+
+		bonuses = append(bonuses, cc)
+	}
+
+	return bonuses, nil
+}
+
+// FindBySkillId ...
+func (r *CharacterClassBonusRepository) FindBySkillId(skillId int) ([]*model.CharacterClassBonus, error) {
+	var bonuses []*model.CharacterClassBonus
+
+	bRows, err := r.store.SelectRows(
+		SelectQ+CharacterClassBonusesT+"WHERE skill_id = $1", skillId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.CharacterClassBonus{}
+
+		err := bRows.Scan(&cc.ClassId, &cc.SkillId, &cc.Bonus)
+		if err != nil {
+			return nil, err
+		}
+
+		bonuses = append(bonuses, cc)
+	}
+
+	return bonuses, nil
+}
+
 // Update ...
 func (r *CharacterClassBonusRepository) Update(cb *model.CharacterClassBonus) error {
 	if err := cb.Validate(); err != nil {

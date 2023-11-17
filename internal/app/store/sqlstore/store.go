@@ -41,8 +41,6 @@ func (s *Store) SelectRows(queryStr string, parameters ...any) (*sql.Rows, error
 		return rows, err
 	}
 
-	err = rows.Close()
-
 	return rows, err
 }
 

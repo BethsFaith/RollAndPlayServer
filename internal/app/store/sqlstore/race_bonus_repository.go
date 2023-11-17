@@ -43,6 +43,55 @@ func (r *RaceBonusRepository) Find(raceId int, skillId int) (*model.RaceBonus, e
 	return rb, nil
 }
 
+// FindByRaceId ...
+func (r *RaceBonusRepository) FindByRaceId(raceId int) ([]*model.RaceBonus, error) {
+	var bonuses []*model.RaceBonus
+
+	bRows, err := r.store.SelectRows(
+		SelectQ+RaceBonusesT+"WHERE race_id = $1", raceId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.RaceBonus{}
+
+		err := bRows.Scan(&cc.RaceId, &cc.SkillId, &cc.Bonus)
+		if err != nil {
+			return nil, err
+		}
+
+		bonuses = append(bonuses, cc)
+	}
+
+	return bonuses, nil
+}
+
+// FindBySkillId ...
+func (r *RaceBonusRepository) FindBySkillId(skillId int) ([]*model.RaceBonus, error) {
+	var bonuses []*model.RaceBonus
+	bRows, err := r.store.SelectRows(
+		SelectQ+RaceBonusesT+"WHERE skill_id = $1", skillId,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.RaceBonus{}
+
+		err := bRows.Scan(&cc.RaceId, &cc.SkillId, &cc.Bonus)
+		if err != nil {
+			return nil, err
+		}
+
+		bonuses = append(bonuses, cc)
+	}
+
+	return bonuses, nil
+}
+
 func (r *RaceBonusRepository) Update(rb *model.RaceBonus) error {
 	if err := rb.Validate(); err != nil {
 		return err
