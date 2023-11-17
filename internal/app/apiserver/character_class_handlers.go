@@ -96,3 +96,124 @@ func (s *server) handleClassDelete() http.HandlerFunc {
 		s.respond(w, http.StatusOK, class)
 	}
 }
+
+func (s *server) handleClassBonusCreate() http.HandlerFunc {
+	type request struct {
+		ClassId int `json:"class_id"`
+		SkillId int `json:"skill_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonus := &model.CharacterClassBonus{
+			ClassId: req.ClassId,
+			SkillId: req.SkillId,
+			Bonus:   req.Bonus,
+		}
+		if err := s.store.CharacterClassBonus().Create(bonus); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusCreated, bonus)
+	}
+}
+
+func (s *server) handleClassBonuses() http.HandlerFunc {
+	type request struct {
+		ClassId int `json:"class_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonuses, err := s.store.CharacterClassBonus().FindByClassId(req.ClassId)
+		if err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonuses)
+	}
+}
+
+func (s *server) handleClassBonusUpdate() http.HandlerFunc {
+	type request struct {
+		ClassId int `json:"class_id"`
+		SkillId int `json:"skill_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonus := &model.CharacterClassBonus{
+			ClassId: req.ClassId,
+			SkillId: req.SkillId,
+			Bonus:   req.Bonus,
+		}
+
+		oldBonusData, err := s.store.CharacterClassBonus().Find(bonus.ClassId, bonus.SkillId)
+		if err != nil || oldBonusData == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		if err := s.store.CharacterClassBonus().Update(bonus); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonus)
+	}
+}
+
+func (s *server) handleClassBonusDelete() http.HandlerFunc {
+	type request struct {
+		ClassId int `json:"class_id"`
+		SkillId int `json:"skill_id"`
+		Bonus   int `json:"bonus"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		bonus := &model.CharacterClassBonus{
+			ClassId: req.ClassId,
+			SkillId: req.SkillId,
+			Bonus:   req.Bonus,
+		}
+
+		foundBonus, err := s.store.CharacterClassBonus().Find(bonus.ClassId, bonus.SkillId)
+		if err != nil || foundBonus == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		if err := s.store.CharacterClassBonus().Delete(bonus.ClassId, bonus.SkillId); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, bonus)
+	}
+}

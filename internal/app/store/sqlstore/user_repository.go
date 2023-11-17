@@ -21,7 +21,7 @@ func (r *UserRepository) Create(u *model.User) error {
 		return err
 	}
 
-	return r.store.Create(
+	return r.store.CreateRetId(
 		InsertQ+UsersT+UsersP+"values ($1, $2) RETURNING id", u.Email, u.EncryptedPassword,
 	).Scan(&u.ID)
 }

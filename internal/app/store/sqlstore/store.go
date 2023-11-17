@@ -7,12 +7,14 @@ import (
 )
 
 type Store struct {
-	db                       *sql.DB
-	userRepository           *UserRepository
-	skillRepository          *SkillRepository
-	raceRepository           *RaceRepository
-	actionRepository         *ActionRepository
-	characterClassRepository *CharacterClassRepository
+	db                            *sql.DB
+	userRepository                *UserRepository
+	skillRepository               *SkillRepository
+	raceRepository                *RaceRepository
+	actionRepository              *ActionRepository
+	characterClassRepository      *CharacterClassRepository
+	raceBonusRepository           *RaceBonusRepository
+	characterClassBonusRepository *CharacterClassBonusRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -21,7 +23,11 @@ func New(db *sql.DB) *Store {
 	}
 }
 
-func (s *Store) Create(queryStr string, parameters ...any) *sql.Row {
+func (s *Store) Create(queryStr string, parameters ...any) (sql.Result, error) {
+	return s.db.Exec(queryStr, parameters...)
+}
+
+func (s *Store) CreateRetId(queryStr string, parameters ...any) *sql.Row {
 	return s.db.QueryRow(queryStr, parameters...)
 }
 
@@ -34,8 +40,6 @@ func (s *Store) SelectRows(queryStr string, parameters ...any) (*sql.Rows, error
 	if err != nil {
 		return rows, err
 	}
-
-	err = rows.Close()
 
 	return rows, err
 }
@@ -106,4 +110,28 @@ func (s *Store) CharacterClass() store.CharacterClassRepository {
 	}
 
 	return s.characterClassRepository
+}
+
+func (s *Store) RaceBonus() store.RaceBonusRepository {
+	if s.raceBonusRepository != nil {
+		return s.raceBonusRepository
+	}
+
+	s.raceBonusRepository = &RaceBonusRepository{
+		store: s,
+	}
+
+	return s.raceBonusRepository
+}
+
+func (s *Store) CharacterClassBonus() store.CharacterClassBonusRepository {
+	if s.characterClassBonusRepository != nil {
+		return s.characterClassBonusRepository
+	}
+
+	s.characterClassBonusRepository = &CharacterClassBonusRepository{
+		store: s,
+	}
+
+	return s.characterClassBonusRepository
 }

@@ -17,7 +17,7 @@ func (r *RaceRepository) Create(s *model.Race) error {
 		return err
 	}
 
-	return r.store.Create(
+	return r.store.CreateRetId(
 		InsertQ+RacesT+RacesP+"values ($1, $2) RETURNING id", s.Name, s.Model,
 	).Scan(&s.ID)
 }

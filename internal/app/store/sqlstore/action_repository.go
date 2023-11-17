@@ -20,7 +20,7 @@ func (r *ActionRepository) Create(a *model.Action) error {
 		return err
 	}
 
-	return r.store.Create(
+	return r.store.CreateRetId(
 		InsertQ+ActionsT+ActionsP+"values ($1, $2, $3, $4) RETURNING id", a.Name, a.Icon, a.RefSkillId, a.Points,
 	).Scan(&a.ID)
 }

@@ -27,14 +27,14 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 		}
 	}
 
-	return r.store.Create(
+	return r.store.CreateRetId(
 		InsertQ+SkillsT+SkillsP+"values ($1, $2, $3) RETURNING id", s.Name, s.Icon, s.RefCategoryId,
 	).Scan(&s.ID)
 }
 
 // CreateCategory ...
 func (r *SkillRepository) CreateCategory(sc *model.SkillCategory) error {
-	return r.store.Create(
+	return r.store.CreateRetId(
 		InsertQ+SkillCategoriesT+SkillCategoriesP+"values ($1, $2) RETURNING id",
 		sc.Name, sc.Icon,
 	).Scan(&sc.ID)
