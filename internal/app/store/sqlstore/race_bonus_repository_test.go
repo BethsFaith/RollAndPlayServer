@@ -72,8 +72,8 @@ func TestRaceBonusRepository_FindByRaceId(t *testing.T) {
 	race := model.TestRace(t)
 	race2 := model.TestRace(t)
 	race2.Name = strconv.Itoa(2)
-	s.Race().Create(race)
-	s.Race().Create(race2)
+	_ = s.Race().Create(race)
+	_ = s.Race().Create(race2)
 
 	var bonuses1 []*model.RaceBonus
 	var bonuses2 []*model.RaceBonus
@@ -82,23 +82,23 @@ func TestRaceBonusRepository_FindByRaceId(t *testing.T) {
 	for i := 0; i < number; i++ {
 		skill := model.TestSkill(t)
 		skill.Name = strconv.Itoa(i)
-		s.Skill().Create(skill)
+		_ = s.Skill().Create(skill)
 
 		bonus := model.TestRaceBonus(t)
 		bonus.RaceId = race.ID
 		bonus.SkillId = skill.ID
 		bonuses1 = append(bonuses1, bonus)
-		s.RaceBonus().Create(bonus)
+		_ = s.RaceBonus().Create(bonus)
 
 		skill2 := model.TestSkill(t)
 		skill2.Name = strconv.Itoa(i + 10)
-		s.Skill().Create(skill2)
+		_ = s.Skill().Create(skill2)
 
 		bonus2 := model.TestRaceBonus(t)
 		bonus2.RaceId = race2.ID
 		bonus2.SkillId = skill2.ID
 		bonuses2 = append(bonuses2, bonus2)
-		s.RaceBonus().Create(bonus2)
+		_ = s.RaceBonus().Create(bonus2)
 	}
 
 	bonuses, err := s.RaceBonus().FindByRaceId(race.ID)
@@ -148,23 +148,23 @@ func TestRaceBonusRepository_FindBySkillId(t *testing.T) {
 	for i := 0; i < number; i++ {
 		race := model.TestRace(t)
 		race.Name = strconv.Itoa(i)
-		s.Race().Create(race)
+		_ = s.Race().Create(race)
 
 		bonus := model.TestRaceBonus(t)
 		bonus.RaceId = race.ID
 		bonus.SkillId = skill.ID
 		bonuses1 = append(bonuses1, bonus)
-		s.RaceBonus().Create(bonus)
+		_ = s.RaceBonus().Create(bonus)
 
 		race2 := model.TestRace(t)
 		race2.Name = strconv.Itoa(i + 10)
-		s.Race().Create(race2)
+		_ = s.Race().Create(race2)
 
 		bonus2 := model.TestRaceBonus(t)
 		bonus2.RaceId = race2.ID
 		bonus2.SkillId = skill2.ID
 		bonuses2 = append(bonuses2, bonus2)
-		s.RaceBonus().Create(bonus2)
+		_ = s.RaceBonus().Create(bonus2)
 	}
 
 	bonuses, err := s.RaceBonus().FindBySkillId(skill.ID)

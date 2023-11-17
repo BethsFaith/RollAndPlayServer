@@ -72,8 +72,8 @@ func TestCharacterClassBonusRepository_FindByClassId(t *testing.T) {
 	class := model.TestCharacterClass(t)
 	class2 := model.TestCharacterClass(t)
 	class2.Name = strconv.Itoa(2)
-	s.CharacterClass().Create(class)
-	s.CharacterClass().Create(class2)
+	_ = s.CharacterClass().Create(class)
+	_ = s.CharacterClass().Create(class2)
 
 	var bonuses1 []*model.CharacterClassBonus
 	var bonuses2 []*model.CharacterClassBonus
@@ -88,7 +88,7 @@ func TestCharacterClassBonusRepository_FindByClassId(t *testing.T) {
 		bonus.ClassId = class.ID
 		bonus.SkillId = skill.ID
 		bonuses1 = append(bonuses1, bonus)
-		s.CharacterClassBonus().Create(bonus)
+		_ = s.CharacterClassBonus().Create(bonus)
 
 		skill2 := model.TestSkill(t)
 		skill2.Name = strconv.Itoa(i + 10)
@@ -98,7 +98,7 @@ func TestCharacterClassBonusRepository_FindByClassId(t *testing.T) {
 		bonus2.ClassId = class2.ID
 		bonus2.SkillId = skill2.ID
 		bonuses2 = append(bonuses2, bonus2)
-		s.CharacterClassBonus().Create(bonus2)
+		_ = s.CharacterClassBonus().Create(bonus2)
 	}
 
 	bonuses, err := s.CharacterClassBonus().FindByClassId(class.ID)
@@ -148,23 +148,23 @@ func TestCharacterClassBonusRepository_FindBySkillId(t *testing.T) {
 	for i := 0; i < number; i++ {
 		class := model.TestCharacterClass(t)
 		class.Name = strconv.Itoa(i)
-		s.CharacterClass().Create(class)
+		_ = s.CharacterClass().Create(class)
 
 		bonus := model.TestCharacterClassBonus(t)
 		bonus.ClassId = class.ID
 		bonus.SkillId = skill.ID
 		bonuses1 = append(bonuses1, bonus)
-		s.CharacterClassBonus().Create(bonus)
+		_ = s.CharacterClassBonus().Create(bonus)
 
 		class2 := model.TestCharacterClass(t)
 		class2.Name = strconv.Itoa(i + 10)
-		s.CharacterClass().Create(class2)
+		_ = s.CharacterClass().Create(class2)
 
 		bonus2 := model.TestCharacterClassBonus(t)
 		bonus2.ClassId = class2.ID
 		bonus2.SkillId = skill2.ID
 		bonuses2 = append(bonuses2, bonus2)
-		s.CharacterClassBonus().Create(bonus2)
+		_ = s.CharacterClassBonus().Create(bonus2)
 	}
 
 	bonuses, err := s.CharacterClassBonus().FindBySkillId(skill.ID)
