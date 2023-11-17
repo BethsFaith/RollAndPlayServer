@@ -15,6 +15,7 @@ type Store struct {
 	characterClassRepository      *CharacterClassRepository
 	raceBonusRepository           *RaceBonusRepository
 	characterClassBonusRepository *CharacterClassBonusRepository
+	systemRepository              *SystemRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -134,4 +135,16 @@ func (s *Store) CharacterClassBonus() store.CharacterClassBonusRepository {
 	}
 
 	return s.characterClassBonusRepository
+}
+
+func (s *Store) System() store.SystemRepository {
+	if s.systemRepository != nil {
+		return s.systemRepository
+	}
+
+	s.systemRepository = &SystemRepository{
+		store: s,
+	}
+
+	return s.systemRepository
 }
