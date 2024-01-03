@@ -19,7 +19,7 @@ type SystemComponent struct {
 func (s *System) Validate() error {
 	return validation.ValidateStruct(
 		s,
-		validation.Field(&s.Name, validation.Required, validation.Length(6, 255)),
+		validation.Field(&s.Name, validation.Required, validation.Length(2, 255)),
 		validation.Field(&s.Icon, validation.Length(1, 1024)),
 	)
 }

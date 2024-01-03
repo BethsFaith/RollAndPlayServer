@@ -40,6 +40,16 @@ func (r *SystemRepository) Find(id int) (*model.System, error) {
 	return s, nil
 }
 
+func (r *SystemRepository) GetRaces(systemId int) ([]*model.SystemComponent, error) {
+	return r.selectComponent(systemId, SystemRacesT)
+}
+func (r *SystemRepository) GetSkillCategories(systemId int) ([]*model.SystemComponent, error) {
+	return r.selectComponent(systemId, SystemSkillsT)
+}
+func (r *SystemRepository) GetCharacterClasses(systemId int) ([]*model.SystemComponent, error) {
+	return r.selectComponent(systemId, SystemClassesT)
+}
+
 func (r *SystemRepository) selectComponent(id int, table string) ([]*model.SystemComponent, error) {
 	var components []*model.SystemComponent
 
@@ -81,7 +91,7 @@ func (r *SystemRepository) Update(s *model.System) error {
 	return err
 }
 
-func (r *SystemRepository) AddRace(id int, raceId int) ([]*model.Race, error) {
+func (r *SystemRepository) AddRace(id int, raceId int) ([]*model.SystemComponent, error) {
 	_, err := r.store.Create(
 		InsertQ+SystemRacesT+SystemRacesP+"values ($1, $2) ", id, raceId,
 	)
@@ -90,24 +100,10 @@ func (r *SystemRepository) AddRace(id int, raceId int) ([]*model.Race, error) {
 		return nil, err
 	}
 
-	components, err := r.selectComponent(id, SystemRacesT)
-
-	var races []*model.Race
-	for _, value := range components {
-		r := &model.Race{}
-		r.ID = value.ComponentId
-
-		races = append(races, r)
-	}
-
-	if len(races) == 0 {
-		return nil, store.ErrorRecordNotFound
-	}
-
-	return races, nil
+	return r.selectComponent(id, SystemRacesT)
 }
 
-func (r *SystemRepository) AddSkillCategory(id int, categoryId int) ([]*model.SkillCategory, error) {
+func (r *SystemRepository) AddSkillCategory(id int, categoryId int) ([]*model.SystemComponent, error) {
 	_, err := r.store.Create(
 		InsertQ+SystemSkillsT+SystemSkillsP+"values ($1, $2) ", id, categoryId,
 	)
@@ -116,24 +112,10 @@ func (r *SystemRepository) AddSkillCategory(id int, categoryId int) ([]*model.Sk
 		return nil, err
 	}
 
-	components, err := r.selectComponent(id, SystemSkillsT)
-
-	var categories []*model.SkillCategory
-	for _, value := range components {
-		sc := &model.SkillCategory{}
-		sc.ID = value.ComponentId
-
-		categories = append(categories, sc)
-	}
-
-	if len(categories) == 0 {
-		return nil, store.ErrorRecordNotFound
-	}
-
-	return categories, nil
+	return r.selectComponent(id, SystemSkillsT)
 }
 
-func (r *SystemRepository) AddCharacterClass(id int, categoryId int) ([]*model.CharacterClass, error) {
+func (r *SystemRepository) AddCharacterClass(id int, categoryId int) ([]*model.SystemComponent, error) {
 	_, err := r.store.Create(
 		InsertQ+SystemClassesT+SystemClassesP+"values ($1, $2) ", id, categoryId,
 	)
@@ -142,25 +124,29 @@ func (r *SystemRepository) AddCharacterClass(id int, categoryId int) ([]*model.C
 		return nil, err
 	}
 
-	components, err := r.selectComponent(id, SystemClassesT)
-
-	var categories []*model.CharacterClass
-	for _, value := range components {
-		cc := &model.CharacterClass{}
-		cc.ID = value.ComponentId
-
-		categories = append(categories, cc)
-	}
-
-	if len(categories) == 0 {
-		return nil, store.ErrorRecordNotFound
-	}
-
-	return categories, nil
+	return r.selectComponent(id, SystemClassesT)
 }
 
 func (r *SystemRepository) Delete(id int) error {
 	_, err := r.store.Delete(DeleteQ+SystemsT+"WHERE id = $1", id)
+
+	return err
+}
+
+func (r *SystemRepository) DeleteRace(id int, raceId int) error {
+	_, err := r.store.Delete(DeleteQ+SystemRacesT+"WHERE system_id = $1 AND race_id = $2", id, raceId)
+
+	return err
+}
+
+func (r *SystemRepository) DeleteSkillCategory(id int, categoryId int) error {
+	_, err := r.store.Delete(DeleteQ+SystemSkillsT+"WHERE system_id = $1 AND skill_category_id = $2", id, categoryId)
+
+	return err
+}
+
+func (r *SystemRepository) DeleteCharacterClass(id int, class_id int) error {
+	_, err := r.store.Delete(DeleteQ+SystemClassesT+"WHERE system_id = $1 AND class_id = $2", id, class_id)
 
 	return err
 }

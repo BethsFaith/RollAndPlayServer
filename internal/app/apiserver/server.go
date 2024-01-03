@@ -80,6 +80,17 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/classes/bonuses", s.handleClassBonusCreate()).Methods("POST")
 	private.HandleFunc("/classes/bonuses", s.handleClassBonusUpdate()).Methods("PUT")
 	private.HandleFunc("/classes/bonuses", s.handleClassBonusDelete()).Methods("DELETE")
+
+	private.HandleFunc("/systems", s.handleSystemCreate()).Methods("POST")
+	private.HandleFunc("/systems", s.handleSystemUpdate()).Methods("PUT")
+	private.HandleFunc("/systems", s.handleSystemDelete()).Methods("DELETE")
+
+	private.HandleFunc("/systems/races", s.handleSystemGetRaces()).Methods("GET")
+	private.HandleFunc("/systems/races", s.handleSystemBindRace()).Methods("POST")
+	private.HandleFunc("/systems/classes", s.handleSystemGetClasses()).Methods("GET")
+	private.HandleFunc("/systems/classes", s.handleSystemBindClass()).Methods("POST")
+	private.HandleFunc("/systems/skills", s.handleSystemGetSkillCategories()).Methods("GET")
+	private.HandleFunc("/systems/skills", s.handleSystemBindSkillCategory()).Methods("POST")
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {

@@ -146,3 +146,69 @@ func TestSystemRepository_Delete(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, deletedSystem)
 }
+
+func TestSystemRepository_DeleteRace(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SystemsT, sqlstore.SystemRacesT)
+
+	s := sqlstore.New(db)
+	system := model.TestSystem(t)
+	race := model.TestRace(t)
+
+	assert.NoError(t, s.System().Delete(system.ID))
+
+	_ = s.System().Create(system)
+	_ = s.Race().Create(race)
+	_, _ = s.System().AddRace(system.ID, race.ID)
+
+	assert.NoError(t, s.System().DeleteRace(system.ID, race.ID))
+	races, err := s.System().GetRaces(system.ID)
+
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+	assert.Equal(t, len(races), 0)
+}
+
+func TestSystemRepository_DeleteCharacterClass(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SystemsT, sqlstore.SystemClassesT)
+
+	s := sqlstore.New(db)
+	system := model.TestSystem(t)
+	class := model.TestCharacterClass(t)
+
+	assert.NoError(t, s.System().Delete(system.ID))
+
+	_ = s.System().Create(system)
+	_ = s.CharacterClass().Create(class)
+	_, _ = s.System().AddRace(system.ID, class.ID)
+
+	assert.NoError(t, s.System().DeleteCharacterClass(system.ID, class.ID))
+	classes, err := s.System().GetCharacterClasses(system.ID)
+
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+	assert.Equal(t, len(classes), 0)
+}
+
+func TestSystemRepository_DeleteSkillCategory(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SystemsT, sqlstore.SystemSkillsT)
+
+	s := sqlstore.New(db)
+	system := model.TestSystem(t)
+	skillCategory := model.TestSkillCategory(t)
+
+	assert.NoError(t, s.System().Delete(system.ID))
+
+	_ = s.System().Create(system)
+	_ = s.Skill().CreateCategory(skillCategory)
+	_, _ = s.System().AddRace(system.ID, skillCategory.ID)
+
+	assert.NoError(t, s.System().DeleteSkillCategory(system.ID, skillCategory.ID))
+	skills, err := s.System().GetSkillCategories(system.ID)
+
+	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+	assert.Equal(t, len(skills), 0)
+}

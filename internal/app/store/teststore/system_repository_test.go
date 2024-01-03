@@ -61,7 +61,7 @@ func TestSystemRepository_AddRace(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, races)
 
-	assert.Equal(t, races[0].ID, r.ID)
+	assert.Equal(t, races[0].ComponentId, r.ID)
 }
 
 func TestSystemRepository_AddSkillCategory(t *testing.T) {
@@ -75,7 +75,7 @@ func TestSystemRepository_AddSkillCategory(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, categories)
 
-	assert.Equal(t, categories[0].ID, category.ID)
+	assert.Equal(t, categories[0].ComponentId, category.ID)
 }
 
 func TestSystemRepository_AddCharacterClass(t *testing.T) {
@@ -89,7 +89,7 @@ func TestSystemRepository_AddCharacterClass(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, classes)
 
-	assert.Equal(t, classes[0].ID, class.ID)
+	assert.Equal(t, classes[0].ComponentId, class.ID)
 }
 
 func TestSystemRepository_Delete(t *testing.T) {
@@ -103,4 +103,30 @@ func TestSystemRepository_Delete(t *testing.T) {
 
 	_, err = s.System().Find(sys.ID)
 	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
+}
+
+func TestSystemRepository_DeleteRace(t *testing.T) {
+	s := teststore.New()
+
+	sys := model.TestSystem(t)
+	race := model.TestRace(t)
+	_ = s.System().Create(sys)
+
+	races, err := s.System().AddRace(sys.ID, race.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, races)
+
+	err = s.System().DeleteRace(sys.ID, race.ID)
+	assert.NoError(t, err)
+
+	races, err = s.System().GetRaces(sys.ID)
+	assert.Equal(t, len(races), 0)
+}
+
+func TestSystemRepository_DeleteSkillCategory(t *testing.T) {
+
+}
+
+func TestSystemRepository_DeleteCharacterClass(t *testing.T) {
+
 }

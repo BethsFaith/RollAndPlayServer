@@ -120,7 +120,9 @@ func (s *Store) System() store.SystemRepository {
 	s.systemRepository = &SystemRepository{
 		store:      s,
 		systems:    make(map[int]*model.System),
-		components: make(map[int]*model.SystemComponent),
+		races:      make(map[int][]*model.SystemComponent),
+		classes:    make(map[int][]*model.SystemComponent),
+		categories: make(map[int][]*model.SystemComponent),
 	}
 
 	return s.systemRepository

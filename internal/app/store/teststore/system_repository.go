@@ -8,7 +8,9 @@ import (
 type SystemRepository struct {
 	store      *Store
 	systems    map[int]*model.System
-	components map[int]*model.SystemComponent
+	races      map[int][]*model.SystemComponent
+	classes    map[int][]*model.SystemComponent
+	categories map[int][]*model.SystemComponent
 }
 
 func (r *SystemRepository) Create(s *model.System) error {
@@ -30,76 +32,49 @@ func (r *SystemRepository) Find(id int) (*model.System, error) {
 	return s, nil
 }
 
-func (r *SystemRepository) AddRace(id int, raceId int) ([]*model.Race, error) {
+func (r *SystemRepository) GetRaces(id int) ([]*model.SystemComponent, error) {
+	return r.races[id], nil
+}
+
+func (r *SystemRepository) GetSkillCategories(id int) ([]*model.SystemComponent, error) {
+	return r.categories[id], nil
+}
+
+func (r *SystemRepository) GetCharacterClasses(id int) ([]*model.SystemComponent, error) {
+	return r.classes[id], nil
+}
+
+func (r *SystemRepository) AddRace(id int, raceId int) ([]*model.SystemComponent, error) {
 	s := &model.SystemComponent{
 		SystemId:    id,
 		ComponentId: raceId,
 	}
 
-	r.components[len(r.components)+1] = s
+	r.races[id] = append(r.races[id], s)
 
-	var races []*model.Race
-	for _, value := range r.components {
-		r := &model.Race{
-			ID: value.ComponentId,
-		}
-
-		races = append(races, r)
-	}
-
-	if len(races) == 0 {
-		return nil, store.ErrorRecordNotFound
-	}
-
-	return races, nil
+	return r.races[id], nil
 }
 
-func (r *SystemRepository) AddSkillCategory(id int, categoryId int) ([]*model.SkillCategory, error) {
+func (r *SystemRepository) AddSkillCategory(id int, categoryId int) ([]*model.SystemComponent, error) {
 	s := &model.SystemComponent{
 		SystemId:    id,
 		ComponentId: categoryId,
 	}
 
-	r.components[len(r.components)+1] = s
+	r.categories[id] = append(r.categories[id], s)
 
-	var categories []*model.SkillCategory
-	for _, value := range r.components {
-		r := &model.SkillCategory{
-			ID: value.ComponentId,
-		}
-
-		categories = append(categories, r)
-	}
-
-	if len(categories) == 0 {
-		return nil, store.ErrorRecordNotFound
-	}
-
-	return categories, nil
+	return r.categories[id], nil
 }
 
-func (r *SystemRepository) AddCharacterClass(id int, classId int) ([]*model.CharacterClass, error) {
+func (r *SystemRepository) AddCharacterClass(id int, classId int) ([]*model.SystemComponent, error) {
 	s := &model.SystemComponent{
 		SystemId:    id,
 		ComponentId: classId,
 	}
 
-	r.components[len(r.components)+1] = s
+	r.classes[id] = append(r.classes[id], s)
 
-	var categories []*model.CharacterClass
-	for _, value := range r.components {
-		r := &model.CharacterClass{
-			ID: value.ComponentId,
-		}
-
-		categories = append(categories, r)
-	}
-
-	if len(categories) == 0 {
-		return nil, store.ErrorRecordNotFound
-	}
-
-	return categories, nil
+	return r.classes[id], nil
 }
 
 func (r *SystemRepository) Update(system *model.System) error {
@@ -108,7 +83,7 @@ func (r *SystemRepository) Update(system *model.System) error {
 		return store.ErrorRecordNotFound
 	}
 
-	err := s.Validate()
+	err := system.Validate()
 	if err != nil {
 		return err
 	}
@@ -126,6 +101,66 @@ func (r *SystemRepository) Delete(id int) error {
 	}
 
 	delete(r.systems, id)
+
+	return nil
+}
+
+func (r *SystemRepository) DeleteRace(id int, raceId int) error {
+	races, ok := r.races[id]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	for i := range races {
+		if races[i].ComponentId == raceId {
+			var t = races[i]
+			races[i] = races[len(races)-1]
+			races[len(races)-1] = t
+
+			break
+		}
+	}
+	races = races[:len(races)-1]
+
+	return nil
+}
+
+func (r *SystemRepository) DeleteCharacterClass(id int, classId int) error {
+	classes, ok := r.classes[id]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	for i := range classes {
+		if classes[i].ComponentId == classId {
+			var t = classes[i]
+			classes[i] = classes[len(classes)-1]
+			classes[len(classes)-1] = t
+
+			break
+		}
+	}
+	classes = classes[:len(classes)-1]
+
+	return nil
+}
+
+func (r *SystemRepository) DeleteSkillCategory(id int, categoryId int) error {
+	categories, ok := r.categories[id]
+	if !ok {
+		return store.ErrorRecordNotFound
+	}
+
+	for i := range categories {
+		if categories[i].ComponentId == categoryId {
+			var t = categories[i]
+			categories[i] = categories[len(categories)-1]
+			categories[len(categories)-1] = t
+
+			break
+		}
+	}
+	categories = categories[:len(categories)-1]
 
 	return nil
 }
