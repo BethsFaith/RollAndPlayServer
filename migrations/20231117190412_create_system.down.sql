@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS System_Skills;
+DROP TABLE IF EXISTS System_Classes;
+DROP TABLE IF EXISTS System_Races;
+DROP TABLE IF EXISTS Systems;

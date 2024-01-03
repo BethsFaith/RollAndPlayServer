@@ -1,0 +1,10 @@
+# config/local.yaml
+
+env: "dev" # Окружение - local, dev или prod
+db_connection: "user=postgres password=1611 dbname=RollAndPlay sslmode=disable"
+storage_path: "./storage/storage.db" # файл, в котором будет храниться наша БД
+http_server: # конфигурация нашего http-сервера
+  address: "localhost:8080"
+  timeout: 4s
+  idle_timeout: 30s
+  session_key: "htiagb6734eeskw592x5dbzmcohbqn2mm06nra4cs4oji9i34ca5uwcjdhz78e53w25z7n"

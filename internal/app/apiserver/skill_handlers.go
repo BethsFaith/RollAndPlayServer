@@ -1,0 +1,196 @@
+package apiserver
+
+import (
+	"RnpServer/internal/app/model"
+	"RnpServer/internal/app/store"
+	"encoding/json"
+	"net/http"
+)
+
+func (s *server) handleSkillCreate() http.HandlerFunc {
+	type request struct {
+		Name       string `json:"name"`
+		Icon       string `json:"icon"`
+		CategoryId int    `json:"category_id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		skill := &model.Skill{
+			Name:       req.Name,
+			Icon:       req.Icon,
+			CategoryId: req.CategoryId,
+		}
+		if err := s.store.Skill().Create(skill); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusCreated, skill)
+	}
+}
+
+func (s *server) handleSkillCategoryCreate() http.HandlerFunc {
+	type request struct {
+		Name string `json:"name"`
+		Icon string `json:"icon"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		category := &model.SkillCategory{
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+		if err := s.store.Skill().CreateCategory(category); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusCreated, category)
+	}
+}
+
+func (s *server) handleSkillUpdate() http.HandlerFunc {
+	type request struct {
+		ID         int    `json:"id"`
+		Name       string `json:"name"`
+		Icon       string `json:"icon"`
+		CategoryId int    `json:"category_id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		skill := &model.Skill{
+			ID:         req.ID,
+			Name:       req.Name,
+			Icon:       req.Icon,
+			CategoryId: req.CategoryId,
+		}
+
+		oldSkillData, err := s.store.Skill().Find(skill.ID)
+		if err != nil || oldSkillData == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		if err := s.store.Skill().Update(skill); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, skill)
+	}
+}
+
+func (s *server) handleSkillCategoryUpdate() http.HandlerFunc {
+	type request struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Icon string `json:"icon"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		category := &model.SkillCategory{
+			ID:   req.ID,
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+
+		oldSkillData, err := s.store.Skill().FindCategory(category.ID)
+		if err != nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+		}
+		if category.Icon == "" {
+			category.Icon = oldSkillData.Icon
+		}
+		if category.Name == "" {
+			category.Name = oldSkillData.Name
+		}
+
+		if err := s.store.Skill().UpdateCategory(category); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, category)
+	}
+}
+
+func (s *server) handleSkillDelete() http.HandlerFunc {
+	type request struct {
+		ID         int    `json:"id"`
+		Name       string `json:"name"`
+		Icon       string `json:"icon"`
+		CategoryId int    `json:"category_id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		skill := &model.Skill{
+			ID:   req.ID,
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+		if err := s.store.Skill().Delete(skill.ID); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, skill)
+	}
+}
+
+func (s *server) handleSkillCategoryDelete() http.HandlerFunc {
+	type request struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Icon string `json:"icon"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		category := &model.SkillCategory{
+			ID:   req.ID,
+			Name: req.Name,
+			Icon: req.Icon,
+		}
+		if err := s.store.Skill().DeleteCategory(category.ID); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, category)
+	}
+}
