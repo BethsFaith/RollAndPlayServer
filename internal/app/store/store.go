@@ -9,4 +9,5 @@ type Store interface {
 	CharacterClass() CharacterClassRepository
 	RaceBonus() RaceBonusRepository
 	CharacterClassBonus() CharacterClassBonusRepository
+	System() SystemRepository
 }
