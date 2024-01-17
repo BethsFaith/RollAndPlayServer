@@ -18,7 +18,7 @@ const SystemRacesT = "system_races "
 const SystemClassesT = "system_classes "
 const SystemSkillsT = "system_skills "
 
-const UsersP = "(email, encrypted_password) "
+const UsersP = "(email, nickname, encrypted_password) "
 const SkillsP = "(name, icon, category_id) "
 const SkillCategoriesP = "(name, icon) "
 const RacesP = "(name, model) "
