@@ -52,6 +52,8 @@ func (s *server) configureRouter() {
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/who-am-i", s.handleWhoami()).Methods("GET")
 
+	private.HandleFunc("/users", s.handleUsersUpdate()).Methods("PUT")
+
 	private.HandleFunc("/skills", s.handleSkillCreate()).Methods("POST")
 	private.HandleFunc("/skills", s.handleSkillUpdate()).Methods("PUT")
 	private.HandleFunc("/skills", s.handleSkillDelete()).Methods("DELETE")
@@ -146,6 +148,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 	type request struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		Nickname string `json:"nickname"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -158,6 +161,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 		u := &model.User{
 			Email:    req.Email,
 			Password: req.Password,
+			Nickname: req.Nickname,
 		}
 		if err := s.store.User().Create(u); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -200,6 +204,42 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 		}
 
 		s.respond(w, http.StatusOK, nil)
+	}
+}
+
+func (s *server) handleUsersUpdate() http.HandlerFunc {
+	type request struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Nickname string `json:"nickname"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		u := &model.User{
+			Email:    req.Email,
+			Password: req.Password,
+			Nickname: req.Nickname,
+		}
+
+		oldUserData, err := s.store.User().FindByEmail(u.Email)
+		if err != nil || oldUserData == nil {
+			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
+			return
+		}
+
+		u.ID = oldUserData.ID
+		if err := s.store.User().Update(u); err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, u)
 	}
 }
 

@@ -44,12 +44,7 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 }
 
 func (r *UserRepository) Update(u *model.User) error {
-	lastUser, err := r.Find(u.ID)
-	if err != nil {
-		return err
-	}
-
-	err = lastUser.Validate()
+	err := u.Validate()
 	if err != nil {
 		return err
 	}

@@ -72,9 +72,8 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 
 func (r *UserRepository) Update(u *model.User) error {
 	lastU, err := r.Find(u.ID)
-
 	if err != nil {
-		return err
+		return store.ErrorRecordNotFound
 	}
 
 	err = u.Validate()
