@@ -38,6 +38,15 @@ func TestCharacterClass_Validate(t *testing.T) {
 			},
 			isValid: true,
 		},
+		{
+			name: "not valid user id",
+			c: func() *model.CharacterClass {
+				c := model.TestCharacterClass(t)
+				c.UserId = 0
+				return c
+			},
+			isValid: false,
+		},
 	}
 
 	for _, tc := range testCases {

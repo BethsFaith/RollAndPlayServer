@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS Character_Classes;
+DROP TABLE IF EXISTS Character_Classes cascade;

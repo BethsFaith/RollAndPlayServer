@@ -48,6 +48,7 @@ func (r *ActionRepository) Update(a *model.Action) error {
 	source.Icon = a.Icon
 	source.Points = a.Points
 	source.SkillId = a.SkillId
+	source.UserId = a.UserId
 
 	return nil
 }

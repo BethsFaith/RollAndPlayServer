@@ -16,6 +16,9 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 		return err
 	}
 
+	if err := s.BeforeInsertOrUpdate(); err != nil {
+		return err
+	}
 	if s.RefCategoryId.Valid {
 		_, ok := r.categories[s.CategoryId]
 		if !ok {
@@ -62,8 +65,10 @@ func (r *SkillRepository) Update(skill *model.Skill) error {
 		return store.ErrorRecordNotFound
 	}
 
-	err := s.Validate()
-	if err != nil {
+	if err := s.Validate(); err != nil {
+		return err
+	}
+	if err := s.BeforeInsertOrUpdate(); err != nil {
 		return err
 	}
 	if skill.RefCategoryId.Valid {

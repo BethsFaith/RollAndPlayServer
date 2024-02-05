@@ -11,11 +11,14 @@ import (
 func TestSkillRepository_Create(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillsT)
+	defer teardown(sqlstore.SkillsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	skill := model.TestSkill(t)
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
 	assert.NoError(t, s.Skill().Create(skill))
 	assert.NotNil(t, skill)
 
@@ -29,11 +32,14 @@ func TestSkillRepository_Create(t *testing.T) {
 func TestSkillRepository_CreateCategory(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillCategoriesT)
+	defer teardown(sqlstore.SkillCategoriesT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	cat := model.TestSkillCategory(t)
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	cat.UserId = u.ID
 	assert.NoError(t, s.Skill().CreateCategory(cat))
 	assert.NotNil(t, cat)
 }
@@ -41,7 +47,7 @@ func TestSkillRepository_CreateCategory(t *testing.T) {
 func TestSkillRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillsT)
+	defer teardown(sqlstore.SkillsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 
@@ -50,6 +56,9 @@ func TestSkillRepository_Find(t *testing.T) {
 	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
 
 	skill := model.TestSkill(t)
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
 	_ = s.Skill().Create(skill)
 
 	skill, err = s.Skill().Find(skill.ID)
@@ -60,7 +69,7 @@ func TestSkillRepository_Find(t *testing.T) {
 func TestSkillRepository_FindCategory(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillCategoriesT)
+	defer teardown(sqlstore.SkillCategoriesT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 
@@ -69,6 +78,9 @@ func TestSkillRepository_FindCategory(t *testing.T) {
 	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
 
 	cat := model.TestSkillCategory(t)
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	cat.UserId = u.ID
 	_ = s.Skill().CreateCategory(cat)
 	id = cat.ID
 
@@ -80,13 +92,16 @@ func TestSkillRepository_FindCategory(t *testing.T) {
 func TestSkillRepository_Update(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillsT)
+	defer teardown(sqlstore.SkillsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	skill := model.TestSkill(t)
 
 	assert.NoError(t, s.Skill().Update(skill))
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
 	_ = s.Skill().Create(skill)
 	skill.Name = "UpdatedName"
 
@@ -101,13 +116,16 @@ func TestSkillRepository_Update(t *testing.T) {
 func TestSkillRepository_UpdateCategory(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillCategoriesT)
+	defer teardown(sqlstore.SkillCategoriesT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	category := model.TestSkillCategory(t)
 
 	assert.NoError(t, s.Skill().UpdateCategory(category))
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	category.UserId = u.ID
 	_ = s.Skill().CreateCategory(category)
 	category.Name = "UpdatedName"
 
@@ -122,13 +140,16 @@ func TestSkillRepository_UpdateCategory(t *testing.T) {
 func TestSkillRepository_Delete(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillsT)
+	defer teardown(sqlstore.SkillsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	skill := model.TestSkill(t)
 
 	assert.NoError(t, s.Skill().Delete(skill.ID))
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
 	_ = s.Skill().Create(skill)
 	skill, _ = s.Skill().Find(skill.ID)
 	assert.NotNil(t, skill)
@@ -143,13 +164,16 @@ func TestSkillRepository_Delete(t *testing.T) {
 func TestSkillRepository_DeleteCategory(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.SkillCategoriesT)
+	defer teardown(sqlstore.SkillCategoriesT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	category := model.TestSkillCategory(t)
 
 	assert.NoError(t, s.Skill().DeleteCategory(category.ID))
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	category.UserId = u.ID
 	_ = s.Skill().CreateCategory(category)
 	category, _ = s.Skill().FindCategory(category.ID)
 	assert.NotNil(t, category)

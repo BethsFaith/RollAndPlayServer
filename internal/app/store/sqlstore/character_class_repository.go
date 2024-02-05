@@ -18,7 +18,8 @@ func (r *CharacterClassRepository) Create(cc *model.CharacterClass) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+CharacterClassT+CharacterClassesP+"values ($1, $2) RETURNING id", cc.Name, cc.Icon,
+		InsertQ+CharacterClassT+CharacterClassesP+"values ($1, $2, $3) RETURNING id",
+		cc.Name, cc.Icon, cc.UserId,
 	).Scan(&cc.ID)
 }
 
@@ -32,6 +33,7 @@ func (r *CharacterClassRepository) Find(id int) (*model.CharacterClass, error) {
 		&cc.ID,
 		&cc.Name,
 		&cc.Icon,
+		&cc.UserId,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, store.ErrorRecordNotFound
@@ -48,8 +50,8 @@ func (r *CharacterClassRepository) Update(cc *model.CharacterClass) error {
 		return err
 	}
 	_, err := r.store.Update(
-		UpdateQ+CharacterClassT+"SET name = $1, icon = $2  WHERE id = $3", cc.Name, cc.Icon,
-		cc.ID,
+		UpdateQ+CharacterClassT+"SET name = $1, icon = $2, user_id = $3 WHERE id = $4", cc.Name, cc.Icon,
+		cc.UserId, cc.ID,
 	)
 
 	return err

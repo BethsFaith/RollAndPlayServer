@@ -21,7 +21,8 @@ func (r *ActionRepository) Create(a *model.Action) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+ActionsT+ActionsP+"values ($1, $2, $3, $4) RETURNING id", a.Name, a.Icon, a.RefSkillId, a.Points,
+		InsertQ+ActionsT+ActionsP+"values ($1, $2, $3, $4, $5) RETURNING id",
+		a.Name, a.Icon, a.RefSkillId, a.Points, a.UserId,
 	).Scan(&a.ID)
 }
 
@@ -37,6 +38,7 @@ func (r *ActionRepository) Find(id int) (*model.Action, error) {
 		&a.Icon,
 		&a.RefSkillId,
 		&a.Points,
+		&a.UserId,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, store.ErrorRecordNotFound
@@ -59,8 +61,8 @@ func (r *ActionRepository) Update(a *model.Action) error {
 	}
 
 	_, err := r.store.Update(
-		UpdateQ+ActionsT+"SET name = $1, icon = $2, skill_id = $3, points = $4  WHERE id = $5", a.Name, a.Icon,
-		a.RefSkillId, a.Points, a.ID,
+		UpdateQ+ActionsT+"SET name = $1, icon = $2, skill_id = $3, points = $4, user_id = $5 WHERE id = $6",
+		a.Name, a.Icon, a.RefSkillId, a.Points, a.UserId, a.ID,
 	)
 
 	return err

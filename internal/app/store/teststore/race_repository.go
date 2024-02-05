@@ -46,6 +46,7 @@ func (r *RaceRepository) Update(race *model.Race) error {
 
 	source.Name = race.Name
 	source.Model = race.Model
+	source.UserId = race.UserId
 
 	return nil
 }

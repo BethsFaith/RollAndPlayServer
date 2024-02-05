@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS Actions;
+DROP TABLE IF EXISTS Actions cascade;

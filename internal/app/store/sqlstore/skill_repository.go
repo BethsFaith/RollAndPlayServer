@@ -28,15 +28,16 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+SkillsT+SkillsP+"values ($1, $2, $3) RETURNING id", s.Name, s.Icon, s.RefCategoryId,
+		InsertQ+SkillsT+SkillsP+"values ($1, $2, $3, $4) RETURNING id",
+		s.Name, s.Icon, s.RefCategoryId, s.UserId,
 	).Scan(&s.ID)
 }
 
 // CreateCategory ...
 func (r *SkillRepository) CreateCategory(sc *model.SkillCategory) error {
 	return r.store.CreateRetId(
-		InsertQ+SkillCategoriesT+SkillCategoriesP+"values ($1, $2) RETURNING id",
-		sc.Name, sc.Icon,
+		InsertQ+SkillCategoriesT+SkillCategoriesP+"values ($1, $2, $3) RETURNING id",
+		sc.Name, sc.Icon, sc.UserId,
 	).Scan(&sc.ID)
 }
 
@@ -51,6 +52,7 @@ func (r *SkillRepository) Find(id int) (*model.Skill, error) {
 		&s.Name,
 		&s.Icon,
 		&s.RefCategoryId,
+		&s.UserId,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, store.ErrorRecordNotFound
@@ -73,6 +75,7 @@ func (r *SkillRepository) FindCategory(id int) (*model.SkillCategory, error) {
 		&sc.ID,
 		&sc.Name,
 		&sc.Icon,
+		&sc.UserId,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, store.ErrorRecordNotFound
@@ -93,8 +96,8 @@ func (r *SkillRepository) Update(s *model.Skill) error {
 	}
 
 	_, err := r.store.Update(
-		UpdateQ+SkillsT+"SET name = $1, icon = $2, category_id = $3 WHERE id = $4", s.Name, s.Icon,
-		s.RefCategoryId, s.ID,
+		UpdateQ+SkillsT+"SET name = $1, icon = $2, category_id = $3, user_id = $4  WHERE id = $5",
+		s.Name, s.Icon, s.RefCategoryId, s.UserId, s.ID,
 	)
 
 	return err
@@ -103,7 +106,8 @@ func (r *SkillRepository) Update(s *model.Skill) error {
 // UpdateCategory ...
 func (r *SkillRepository) UpdateCategory(sc *model.SkillCategory) error {
 	_, err := r.store.Update(
-		UpdateQ+SkillCategoriesT+"SET name = $1, icon = $2 WHERE id = $3", sc.Name, sc.Icon, sc.ID,
+		UpdateQ+SkillCategoriesT+"SET name = $1, icon = $2, user_id = $3 WHERE id = $4",
+		sc.Name, sc.Icon, sc.UserId, sc.ID,
 	)
 
 	return err

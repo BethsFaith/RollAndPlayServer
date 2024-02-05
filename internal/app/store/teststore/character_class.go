@@ -46,6 +46,7 @@ func (r *CharacterClassRepository) Update(cc *model.CharacterClass) error {
 
 	source.Name = cc.Name
 	source.Icon = cc.Icon
+	source.UserId = cc.UserId
 
 	return nil
 }

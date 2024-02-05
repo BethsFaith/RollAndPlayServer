@@ -226,14 +226,9 @@ func (s *server) handleUsersUpdate() http.HandlerFunc {
 			Password: req.Password,
 			Nickname: req.Nickname,
 		}
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 
-		oldUserData, err := s.store.User().FindByEmail(u.Email)
-		if err != nil || oldUserData == nil {
-			s.error(w, http.StatusUnprocessableEntity, store.ErrorRecordNotFound)
-			return
-		}
-
-		u.ID = oldUserData.ID
+		u.ID = authUser.ID
 		if err := s.store.User().Update(u); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
 			return

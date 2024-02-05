@@ -21,10 +21,12 @@ func (s *server) handleSkillCreate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		skill := &model.Skill{
 			Name:       req.Name,
 			Icon:       req.Icon,
 			CategoryId: req.CategoryId,
+			UserId:     authUser.ID,
 		}
 		if err := s.store.Skill().Create(skill); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -48,9 +50,11 @@ func (s *server) handleSkillCategoryCreate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		category := &model.SkillCategory{
-			Name: req.Name,
-			Icon: req.Icon,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 		if err := s.store.Skill().CreateCategory(category); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -76,11 +80,13 @@ func (s *server) handleSkillUpdate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		skill := &model.Skill{
 			ID:         req.ID,
 			Name:       req.Name,
 			Icon:       req.Icon,
 			CategoryId: req.CategoryId,
+			UserId:     authUser.ID,
 		}
 
 		oldSkillData, err := s.store.Skill().Find(skill.ID)
@@ -112,10 +118,12 @@ func (s *server) handleSkillCategoryUpdate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		category := &model.SkillCategory{
-			ID:   req.ID,
-			Name: req.Name,
-			Icon: req.Icon,
+			ID:     req.ID,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 
 		oldSkillData, err := s.store.Skill().FindCategory(category.ID)
@@ -153,10 +161,12 @@ func (s *server) handleSkillDelete() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		skill := &model.Skill{
-			ID:   req.ID,
-			Name: req.Name,
-			Icon: req.Icon,
+			ID:     req.ID,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 		if err := s.store.Skill().Delete(skill.ID); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -181,10 +191,12 @@ func (s *server) handleSkillCategoryDelete() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		category := &model.SkillCategory{
-			ID:   req.ID,
-			Name: req.Name,
-			Icon: req.Icon,
+			ID:     req.ID,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 		if err := s.store.Skill().DeleteCategory(category.ID); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)

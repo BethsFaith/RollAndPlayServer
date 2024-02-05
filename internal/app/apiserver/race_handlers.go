@@ -20,9 +20,11 @@ func (s *server) handleRaceCreate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		race := &model.Race{
-			Name:  req.Name,
-			Model: req.Model,
+			Name:   req.Name,
+			Model:  req.Model,
+			UserId: authUser.ID,
 		}
 		if err := s.store.Race().Create(race); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -47,10 +49,12 @@ func (s *server) handleRaceUpdate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		race := &model.Race{
-			ID:    req.ID,
-			Name:  req.Name,
-			Model: req.Model,
+			ID:     req.ID,
+			Name:   req.Name,
+			Model:  req.Model,
+			UserId: authUser.ID,
 		}
 
 		foundRace, err := s.store.Race().Find(race.ID)
@@ -82,10 +86,12 @@ func (s *server) handleRaceDelete() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		race := &model.Race{
-			ID:    req.ID,
-			Name:  req.Name,
-			Model: req.Model,
+			ID:     req.ID,
+			Name:   req.Name,
+			Model:  req.Model,
+			UserId: authUser.ID,
 		}
 
 		foundRace, err := s.store.Race().Find(race.ID)
