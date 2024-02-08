@@ -44,6 +44,56 @@ func TestSkillRepository_CreateCategory(t *testing.T) {
 	assert.NotNil(t, cat)
 }
 
+func TestSkillRepository_Get(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SkillsT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	skill := model.TestSkill(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
+
+	assert.NoError(t, s.Skill().Create(skill))
+	assert.NotNil(t, skill)
+
+	skill.Name = "test2"
+	assert.NoError(t, s.Skill().Create(skill))
+
+	skills, err := s.Skill().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, skills)
+
+	assert.Equal(t, len(skills), 2)
+}
+
+func TestSkillRepository_GetCategories(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.SkillCategoriesT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	c := model.TestSkillCategory(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	c.UserId = u.ID
+
+	assert.NoError(t, s.Skill().CreateCategory(c))
+	assert.NotNil(t, c)
+
+	c.Name = "test2"
+	assert.NoError(t, s.Skill().CreateCategory(c))
+
+	categories, err := s.Skill().GetCategories()
+	assert.NoError(t, err)
+	assert.NotNil(t, categories)
+
+	assert.Equal(t, len(categories), 2)
+}
+
 func TestSkillRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 

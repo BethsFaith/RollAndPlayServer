@@ -23,6 +23,17 @@ func (r *CharacterClassRepository) Create(cc *model.CharacterClass) error {
 	return nil
 }
 
+// Get ...
+func (r *CharacterClassRepository) Get() ([]*model.CharacterClass, error) {
+	var classes []*model.CharacterClass
+
+	for i := range r.classes {
+		classes = append(classes, r.classes[i])
+	}
+
+	return classes, nil
+}
+
 // Find ...
 func (r *CharacterClassRepository) Find(id int) (*model.CharacterClass, error) {
 	class, ok := r.classes[id]

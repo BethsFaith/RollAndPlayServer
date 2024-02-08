@@ -35,6 +35,18 @@ func (s *server) handleRaceCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleRaceGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		races, err := s.store.Race().Get()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, races)
+	}
+}
+
 func (s *server) handleRaceUpdate() http.HandlerFunc {
 	type request struct {
 		ID    int    `json:"id"`

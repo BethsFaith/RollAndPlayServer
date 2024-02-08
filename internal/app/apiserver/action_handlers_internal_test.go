@@ -94,6 +94,29 @@ func TestServer_handleActionCreate(t *testing.T) {
 	}
 }
 
+func TestServer_handleActionGet(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	rec := httptest.NewRecorder()
+
+	b := &bytes.Buffer{}
+
+	req, _ := http.NewRequest(http.MethodGet, "/actions", b)
+
+	TestSetCookie(req, u, sc)
+
+	s.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
 func TestServer_handleActionUpdate(t *testing.T) {
 	logger := log.TestLogger()
 

@@ -23,6 +23,31 @@ func (r *CharacterClassRepository) Create(cc *model.CharacterClass) error {
 	).Scan(&cc.ID)
 }
 
+// Get ...
+func (r *CharacterClassRepository) Get() ([]*model.CharacterClass, error) {
+	var classes []*model.CharacterClass
+
+	bRows, err := r.store.SelectRows(
+		SelectQ + CharacterClassT,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.CharacterClass{}
+
+		err := bRows.Scan(&cc.ID, &cc.Name, &cc.Icon, &cc.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		classes = append(classes, cc)
+	}
+
+	return classes, nil
+}
+
 // Find ...
 func (r *CharacterClassRepository) Find(id int) (*model.CharacterClass, error) {
 	cc := &model.CharacterClass{}

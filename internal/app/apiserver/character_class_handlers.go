@@ -35,6 +35,18 @@ func (s *server) handleClassCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleClassGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		classes, err := s.store.CharacterClass().Get()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, classes)
+	}
+}
+
 func (s *server) handleClassUpdate() http.HandlerFunc {
 	type request struct {
 		ID   int    `json:"id"`

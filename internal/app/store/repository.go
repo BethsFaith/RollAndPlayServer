@@ -14,6 +14,8 @@ type UserRepository interface {
 type SkillRepository interface {
 	Create(*model.Skill) error
 	CreateCategory(*model.SkillCategory) error
+	Get() ([]*model.Skill, error)
+	GetCategories() ([]*model.SkillCategory, error)
 	Find(int) (*model.Skill, error)
 	FindCategory(int) (*model.SkillCategory, error)
 	Update(*model.Skill) error
@@ -24,6 +26,7 @@ type SkillRepository interface {
 
 type RaceRepository interface {
 	Create(*model.Race) error
+	Get() ([]*model.Race, error)
 	Find(int) (*model.Race, error)
 	Update(*model.Race) error
 	Delete(id int) error
@@ -31,6 +34,7 @@ type RaceRepository interface {
 
 type ActionRepository interface {
 	Create(*model.Action) error
+	Get() ([]*model.Action, error)
 	Find(int) (*model.Action, error)
 	Update(*model.Action) error
 	Delete(id int) error
@@ -38,6 +42,7 @@ type ActionRepository interface {
 
 type CharacterClassRepository interface {
 	Create(*model.CharacterClass) error
+	Get() ([]*model.CharacterClass, error)
 	Find(int) (*model.CharacterClass, error)
 	Update(*model.CharacterClass) error
 	Delete(id int) error

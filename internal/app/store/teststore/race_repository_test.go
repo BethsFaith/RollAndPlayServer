@@ -16,6 +16,29 @@ func TestRaceRepository_Create(t *testing.T) {
 	assert.NotNil(t, r)
 }
 
+func TestRaceRepository_Get(t *testing.T) {
+	s := teststore.New()
+
+	r := model.TestRace(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	r.UserId = u.ID
+
+	assert.NoError(t, s.Race().Create(r))
+	assert.NotNil(t, r)
+
+	r2 := *r
+	r2.Name = "test2"
+	assert.NoError(t, s.Race().Create(&r2))
+
+	races, err := s.Race().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, races)
+	assert.Equal(t, *r, *races[0])
+	assert.Equal(t, r2, *races[1])
+}
+
 func TestRaceRepository_Find(t *testing.T) {
 	s := teststore.New()
 

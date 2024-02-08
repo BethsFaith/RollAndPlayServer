@@ -65,6 +65,30 @@ func (s *server) handleSkillCategoryCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleSkillGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		skills, err := s.store.Skill().Get()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, skills)
+	}
+}
+
+func (s *server) handleSkillCategoryGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		categories, err := s.store.Skill().GetCategories()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, categories)
+	}
+}
+
 func (s *server) handleSkillUpdate() http.HandlerFunc {
 	type request struct {
 		ID         int    `json:"id"`

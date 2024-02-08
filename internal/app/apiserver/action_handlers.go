@@ -39,6 +39,18 @@ func (s *server) handleActionCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) handleActionGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		actions, err := s.store.Action().Get()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, actions)
+	}
+}
+
 func (s *server) handleActionUpdate() http.HandlerFunc {
 	type request struct {
 		ID      int    `json:"id"`

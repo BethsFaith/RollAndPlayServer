@@ -43,6 +43,26 @@ func (r *SkillRepository) CreateCategory(c *model.SkillCategory) error {
 	return nil
 }
 
+func (r *SkillRepository) Get() ([]*model.Skill, error) {
+	var skills []*model.Skill
+
+	for i := range r.skills {
+		skills = append(skills, r.skills[i])
+	}
+
+	return skills, nil
+}
+
+func (r *SkillRepository) GetCategories() ([]*model.SkillCategory, error) {
+	var categories []*model.SkillCategory
+
+	for i := range r.categories {
+		categories = append(categories, r.categories[i])
+	}
+
+	return categories, nil
+}
+
 func (r *SkillRepository) Find(id int) (*model.Skill, error) {
 	s, ok := r.skills[id]
 	if !ok {

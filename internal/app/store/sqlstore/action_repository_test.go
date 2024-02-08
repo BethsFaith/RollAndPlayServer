@@ -30,6 +30,30 @@ func TestActionRepository_Create(t *testing.T) {
 	assert.Error(t, s.Action().Create(a))
 }
 
+func TestActionRepository_Get(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.ActionsT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	a := model.TestAction(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	a.UserId = u.ID
+
+	assert.NoError(t, s.Action().Create(a))
+	assert.NotNil(t, a)
+
+	a.Name = "test2"
+	assert.NoError(t, s.Action().Create(a))
+
+	actions, err := s.Action().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, actions)
+	assert.Equal(t, len(actions), 2)
+}
+
 func TestActionRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 

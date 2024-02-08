@@ -23,6 +23,17 @@ func (r *RaceRepository) Create(race *model.Race) error {
 	return nil
 }
 
+// Get ...
+func (r *RaceRepository) Get() ([]*model.Race, error) {
+	var races []*model.Race
+
+	for i := range r.races {
+		races = append(races, r.races[i])
+	}
+
+	return races, nil
+}
+
 // Find ...
 func (r *RaceRepository) Find(id int) (*model.Race, error) {
 	race, ok := r.races[id]

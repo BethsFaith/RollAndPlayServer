@@ -26,6 +26,33 @@ func (r *ActionRepository) Create(a *model.Action) error {
 	).Scan(&a.ID)
 }
 
+// Get ...
+func (r *ActionRepository) Get() ([]*model.Action, error) {
+	var actions []*model.Action
+
+	bRows, err := r.store.SelectRows(
+		SelectQ + ActionsT,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		a := &model.Action{}
+
+		err := bRows.Scan(&a.ID, &a.Name, &a.Icon, &a.RefSkillId, &a.Points, &a.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		a.AfterScan()
+
+		actions = append(actions, a)
+	}
+
+	return actions, nil
+}
+
 // Find ...
 func (r *ActionRepository) Find(id int) (*model.Action, error) {
 	a := &model.Action{}

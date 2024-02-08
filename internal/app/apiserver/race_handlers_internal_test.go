@@ -79,6 +79,29 @@ func TestServer_handleRaceCreate(t *testing.T) {
 	}
 }
 
+func TestServer_handleRaceGet(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	rec := httptest.NewRecorder()
+
+	b := &bytes.Buffer{}
+
+	req, _ := http.NewRequest(http.MethodGet, "/races", b)
+
+	TestSetCookie(req, u, sc)
+
+	s.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
 func TestServer_handleRaceUpdate(t *testing.T) {
 	logger := log.TestLogger()
 

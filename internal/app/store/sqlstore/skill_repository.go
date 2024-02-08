@@ -41,6 +41,58 @@ func (r *SkillRepository) CreateCategory(sc *model.SkillCategory) error {
 	).Scan(&sc.ID)
 }
 
+// Get ...
+func (r *SkillRepository) Get() ([]*model.Skill, error) {
+	var skills []*model.Skill
+
+	bRows, err := r.store.SelectRows(
+		SelectQ + SkillsT,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		s := &model.Skill{}
+
+		err := bRows.Scan(&s.ID, &s.Name, &s.Icon, &s.RefCategoryId, &s.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		s.AfterScan()
+
+		skills = append(skills, s)
+	}
+
+	return skills, nil
+}
+
+// GetCategory ...
+func (r *SkillRepository) GetCategories() ([]*model.SkillCategory, error) {
+	var categories []*model.SkillCategory
+
+	bRows, err := r.store.SelectRows(
+		SelectQ + SkillCategoriesT,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		sc := &model.SkillCategory{}
+
+		err := bRows.Scan(&sc.ID, &sc.Name, &sc.Icon, &sc.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		categories = append(categories, sc)
+	}
+
+	return categories, nil
+}
+
 // Find ...
 func (r *SkillRepository) Find(id int) (*model.Skill, error) {
 	s := &model.Skill{}

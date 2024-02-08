@@ -22,6 +22,31 @@ func (r *RaceRepository) Create(s *model.Race) error {
 	).Scan(&s.ID)
 }
 
+// Get ...
+func (r *RaceRepository) Get() ([]*model.Race, error) {
+	var races []*model.Race
+
+	bRows, err := r.store.SelectRows(
+		SelectQ + RacesT,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.Race{}
+
+		err := bRows.Scan(&cc.ID, &cc.Name, &cc.Model, &cc.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		races = append(races, cc)
+	}
+
+	return races, nil
+}
+
 // Find ...
 func (r *RaceRepository) Find(id int) (*model.Race, error) {
 	race := &model.Race{}

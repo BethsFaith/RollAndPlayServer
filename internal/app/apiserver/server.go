@@ -47,6 +47,12 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods("POST")
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
 
+	s.router.HandleFunc("/skills", s.handleSkillGet()).Methods("GET")
+	s.router.HandleFunc("/skill-categories", s.handleSkillCategoryGet()).Methods("GET")
+	s.router.HandleFunc("/races", s.handleRaceGet()).Methods("GET")
+	s.router.HandleFunc("/actions", s.handleActionGet()).Methods("GET")
+	s.router.HandleFunc("/classes", s.handleClassGet()).Methods("GET")
+
 	// /private/***
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)

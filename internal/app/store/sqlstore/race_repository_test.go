@@ -23,6 +23,32 @@ func TestRaceRepository_Create(t *testing.T) {
 	assert.NotNil(t, race)
 }
 
+func TestRaceRepository_Get(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.RacesT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	r := model.TestRace(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	r.UserId = u.ID
+
+	assert.NoError(t, s.Race().Create(r))
+	assert.NotNil(t, r)
+
+	r2 := *r
+	r2.Name = "test2"
+	assert.NoError(t, s.Race().Create(&r2))
+
+	races, err := s.Race().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, races)
+
+	assert.Equal(t, len(races), 2)
+}
+
 func TestRaceRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 

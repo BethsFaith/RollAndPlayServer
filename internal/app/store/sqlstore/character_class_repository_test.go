@@ -24,6 +24,32 @@ func TestCharacterClassRepository_Create(t *testing.T) {
 	assert.NotNil(t, characterClass)
 }
 
+func TestCharacterClassRepository_Get(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.CharacterClassT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	cc := model.TestCharacterClass(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	cc.UserId = u.ID
+
+	assert.NoError(t, s.CharacterClass().Create(cc))
+	assert.NotNil(t, cc)
+
+	cc2 := *cc
+	cc2.Name = "test2"
+	assert.NoError(t, s.CharacterClass().Create(&cc2))
+
+	classes, err := s.CharacterClass().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, classes)
+
+	assert.Equal(t, len(classes), 2)
+}
+
 func TestCharacterClassRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
