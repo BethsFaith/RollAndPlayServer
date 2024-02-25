@@ -66,26 +66,55 @@ func (s *server) handleSkillCategoryCreate() http.HandlerFunc {
 }
 
 func (s *server) handleSkillGet() http.HandlerFunc {
+	type request struct {
+		CategoryId int `json:"category_id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		skills, err := s.store.Skill().Get()
-		if err != nil {
-			s.error(w, http.StatusInternalServerError, err)
-			return
-		}
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			skills, err := s.store.Skill().Get()
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
 
-		s.respond(w, http.StatusOK, skills)
+			s.respond(w, http.StatusOK, skills)
+		} else {
+			skills, err := s.store.Skill().GetByCategory(req.CategoryId)
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
+			s.respond(w, http.StatusOK, skills)
+		}
 	}
 }
 
 func (s *server) handleSkillCategoryGet() http.HandlerFunc {
+	type request struct {
+		ID         int    `json:"id"`
+		Name       string `json:"name"`
+		Icon       string `json:"icon"`
+		CategoryId int    `json:"category_id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		categories, err := s.store.Skill().GetCategories()
-		if err != nil {
-			s.error(w, http.StatusInternalServerError, err)
-			return
-		}
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			categories, err := s.store.Skill().GetCategories()
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
 
-		s.respond(w, http.StatusOK, categories)
+			s.respond(w, http.StatusOK, categories)
+		} else {
+			cat, err := s.store.Skill().FindCategory(req.ID)
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
+			s.respond(w, http.StatusOK, cat)
+		}
 	}
 }
 

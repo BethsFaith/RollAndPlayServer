@@ -47,6 +47,7 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods("POST")
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
 
+	s.router.HandleFunc("/view-user", s.handleUser()).Methods("GET")
 	s.router.HandleFunc("/skills", s.handleSkillGet()).Methods("GET")
 	s.router.HandleFunc("/skill-categories", s.handleSkillCategoryGet()).Methods("GET")
 	s.router.HandleFunc("/races", s.handleRaceGet()).Methods("GET")
@@ -175,6 +176,28 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 		}
 
 		s.respond(w, http.StatusCreated, u)
+	}
+}
+
+func (s *server) handleUser() http.HandlerFunc {
+	type request struct {
+		Id int `json:"id"`
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, http.StatusBadRequest, err)
+			return
+		}
+
+		u, err := s.store.User().Find(req.Id)
+		if err != nil {
+			s.error(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, u)
 	}
 }
 

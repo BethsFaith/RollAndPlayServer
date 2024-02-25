@@ -21,7 +21,7 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 	}
 
 	if s.RefCategoryId.Valid {
-		_, err := r.Find(s.CategoryId)
+		_, err := r.FindCategory(s.CategoryId)
 		if err != nil {
 			return store.ErrorNotExistRef
 		}
@@ -68,7 +68,34 @@ func (r *SkillRepository) Get() ([]*model.Skill, error) {
 	return skills, nil
 }
 
-// GetCategory ...
+// GetByCategory ...
+func (r *SkillRepository) GetByCategory(id int) ([]*model.Skill, error) {
+	var skills []*model.Skill
+
+	bRows, err := r.store.SelectRows(
+		SelectQ+SkillsT+"WHERE category_id = $1", id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		s := &model.Skill{}
+
+		err := bRows.Scan(&s.ID, &s.Name, &s.Icon, &s.RefCategoryId, &s.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		s.AfterScan()
+
+		skills = append(skills, s)
+	}
+
+	return skills, nil
+}
+
+// GetCategories ...
 func (r *SkillRepository) GetCategories() ([]*model.SkillCategory, error) {
 	var categories []*model.SkillCategory
 

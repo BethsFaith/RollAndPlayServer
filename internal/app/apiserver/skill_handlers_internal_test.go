@@ -178,6 +178,7 @@ func TestServer_handleSkillCategoryGet(t *testing.T) {
 
 	s.ServeHTTP(rec, req)
 	assert.Equal(t, http.StatusOK, rec.Code)
+
 }
 
 func TestServer_handleSkillUpdate(t *testing.T) {

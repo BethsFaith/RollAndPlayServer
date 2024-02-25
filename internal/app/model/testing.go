@@ -15,7 +15,7 @@ func TestSkill(t *testing.T) *Skill {
 	return &Skill{
 		Name:       "skill",
 		Icon:       "path/icon",
-		CategoryId: 0,
+		CategoryId: -1,
 		UserId:     1,
 	}
 }

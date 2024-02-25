@@ -15,6 +15,7 @@ type SkillRepository interface {
 	Create(*model.Skill) error
 	CreateCategory(*model.SkillCategory) error
 	Get() ([]*model.Skill, error)
+	GetByCategory(id int) ([]*model.Skill, error)
 	GetCategories() ([]*model.SkillCategory, error)
 	Find(int) (*model.Skill, error)
 	FindCategory(int) (*model.SkillCategory, error)

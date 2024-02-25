@@ -37,7 +37,7 @@ func (s *Skill) Validate() error {
 	return validation.ValidateStruct(
 		s,
 		validation.Field(&s.Name, validation.Required),
-		validation.Field(&s.CategoryId, validation.Min(0)),
+		validation.Field(&s.CategoryId, validation.Min(-1)),
 		validation.Field(&s.UserId, validation.Required, validation.Min(1)),
 	)
 }
@@ -53,5 +53,5 @@ func (s *Skill) BeforeInsertOrUpdate() error {
 }
 
 func (s *Skill) AfterScan() {
-	s.CategoryId = getDefaultOrValue(0, s.RefCategoryId)
+	s.CategoryId = getDefaultOrValue(-1, s.RefCategoryId)
 }
