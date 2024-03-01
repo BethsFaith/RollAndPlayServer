@@ -23,7 +23,7 @@ func (a *Action) Validate() error {
 		validation.Field(&a.Name, validation.Required, validation.Length(1, 100)),
 		validation.Field(&a.Points, validation.Min(0)),
 		validation.Field(&a.SkillId, validation.Min(0)),
-		validation.Field(&a.UserId, validation.Required, validation.Min(1)),
+		validation.Field(&a.UserId, validation.Required, validation.Min(0)),
 	)
 }
 
