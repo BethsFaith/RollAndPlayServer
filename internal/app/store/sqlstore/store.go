@@ -9,6 +9,7 @@ import (
 type Store struct {
 	db                            *sql.DB
 	userRepository                *UserRepository
+	characteristicRepository      *CharacteristicRepository
 	skillRepository               *SkillRepository
 	raceRepository                *RaceRepository
 	actionRepository              *ActionRepository
@@ -63,6 +64,18 @@ func (s *Store) User() store.UserRepository {
 	}
 
 	return s.userRepository
+}
+
+func (s *Store) Characteristic() store.CharacteristicRepository {
+	if s.characteristicRepository != nil {
+		return s.characteristicRepository
+	}
+
+	s.characteristicRepository = &CharacteristicRepository{
+		store: s,
+	}
+
+	return s.characteristicRepository
 }
 
 func (s *Store) Skill() store.SkillRepository {
