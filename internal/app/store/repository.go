@@ -21,8 +21,8 @@ type SkillRepository interface {
 	FindCategory(int) (*model.SkillCategory, error)
 	Update(*model.Skill) error
 	UpdateCategory(category *model.SkillCategory) error
-	Delete(id int) error
-	DeleteCategory(id int) error
+	Delete(int) error
+	DeleteCategory(int) error
 }
 
 type RaceRepository interface {
@@ -30,7 +30,7 @@ type RaceRepository interface {
 	Get() ([]*model.Race, error)
 	Find(int) (*model.Race, error)
 	Update(*model.Race) error
-	Delete(id int) error
+	Delete(int) error
 }
 
 type ActionRepository interface {
@@ -38,7 +38,7 @@ type ActionRepository interface {
 	Get() ([]*model.Action, error)
 	Find(int) (*model.Action, error)
 	Update(*model.Action) error
-	Delete(id int) error
+	Delete(int) error
 }
 
 type CharacterClassRepository interface {
@@ -46,7 +46,7 @@ type CharacterClassRepository interface {
 	Get() ([]*model.CharacterClass, error)
 	Find(int) (*model.CharacterClass, error)
 	Update(*model.CharacterClass) error
-	Delete(id int) error
+	Delete(int) error
 }
 
 type RaceBonusRepository interface {
@@ -81,4 +81,12 @@ type SystemRepository interface {
 	DeleteRace(int, int) error
 	DeleteCharacterClass(int, int) error
 	DeleteSkillCategory(int, int) error
+}
+
+type CharacteristicRepository interface {
+	Create(characteristic *model.Characteristic) error
+	Find(int) (*model.Characteristic, error)
+	Get() ([]*model.Characteristic, error)
+	Update(*model.Characteristic) error
+	Delete(int) error
 }
