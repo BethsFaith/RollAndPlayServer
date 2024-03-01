@@ -10,6 +10,15 @@ func TestUser(t *testing.T) *User {
 	}
 }
 
+func TestCharacteristic(t *testing.T) *Characteristic {
+	t.Helper()
+	return &Characteristic{
+		Name:   "skill",
+		Icon:   "path/icon",
+		UserId: 1,
+	}
+}
+
 func TestSkill(t *testing.T) *Skill {
 	t.Helper()
 	return &Skill{
