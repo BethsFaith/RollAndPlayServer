@@ -58,3 +58,26 @@ func TestUserRepository_Find(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, u)
 }
+
+func TestUserRepository_Update(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	user := model.TestUser(t)
+
+	assert.Error(t, s.User().Update(user))
+
+	assert.NoError(t, s.User().Create(user))
+
+	user.Nickname = "UpdatedNickname"
+	assert.NoError(t, s.User().Update(user))
+
+	UpdatedUser, err := s.User().Find(user.ID)
+
+	assert.NoError(t, err)
+
+	user.Sanitize()
+	assert.Equal(t, user, UpdatedUser)
+}

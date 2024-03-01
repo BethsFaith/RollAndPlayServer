@@ -11,10 +11,14 @@ import (
 func TestActionRepository_Create(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.ActionsT)
+	defer teardown(sqlstore.ActionsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	a := model.TestAction(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	a.UserId = u.ID
 
 	assert.NoError(t, s.Action().Create(a))
 	assert.NotNil(t, a)
@@ -26,10 +30,34 @@ func TestActionRepository_Create(t *testing.T) {
 	assert.Error(t, s.Action().Create(a))
 }
 
+func TestActionRepository_Get(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.ActionsT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	a := model.TestAction(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	a.UserId = u.ID
+
+	assert.NoError(t, s.Action().Create(a))
+	assert.NotNil(t, a)
+
+	a.Name = "test2"
+	assert.NoError(t, s.Action().Create(a))
+
+	actions, err := s.Action().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, actions)
+	assert.Equal(t, len(actions), 2)
+}
+
 func TestActionRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.ActionsT)
+	defer teardown(sqlstore.ActionsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 
@@ -38,6 +66,10 @@ func TestActionRepository_Find(t *testing.T) {
 	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
 
 	a := model.TestAction(t)
+	u := model.TestUser(t)
+
+	_ = s.User().Create(u)
+	a.UserId = u.ID
 	_ = s.Action().Create(a)
 
 	a, err = s.Action().Find(a.ID)
@@ -48,14 +80,19 @@ func TestActionRepository_Find(t *testing.T) {
 func TestActionRepository_Update(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.ActionsT)
+	defer teardown(sqlstore.ActionsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	a := model.TestAction(t)
 
 	assert.NoError(t, s.Action().Update(a))
 
+	u := model.TestUser(t)
+
+	_ = s.User().Create(u)
+	a.UserId = u.ID
 	_ = s.Action().Create(a)
+
 	a.Name = "UpdatedName"
 
 	assert.NoError(t, s.Action().Update(a))
@@ -69,13 +106,16 @@ func TestActionRepository_Update(t *testing.T) {
 func TestActionRepository_Delete(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.ActionsT)
+	defer teardown(sqlstore.ActionsT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	a := model.TestAction(t)
+	u := model.TestUser(t)
 
 	assert.NoError(t, s.Action().Delete(a.ID))
 
+	_ = s.User().Create(u)
+	a.UserId = u.ID
 	_ = s.Action().Create(a)
 	a, _ = s.Action().Find(a.ID)
 	assert.NotNil(t, a)

@@ -11,19 +11,49 @@ import (
 func TestCharacterClassRepository_Create(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.CharacterClassT)
+	defer teardown(sqlstore.CharacterClassT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	characterClass := model.TestCharacterClass(t)
+
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	characterClass.UserId = u.ID
 
 	assert.NoError(t, s.CharacterClass().Create(characterClass))
 	assert.NotNil(t, characterClass)
 }
 
+func TestCharacterClassRepository_Get(t *testing.T) {
+	db, teardown := sqlstore.TestDB(t, databaseURL)
+
+	defer teardown(sqlstore.CharacterClassT, sqlstore.UsersT)
+
+	s := sqlstore.New(db)
+	cc := model.TestCharacterClass(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	cc.UserId = u.ID
+
+	assert.NoError(t, s.CharacterClass().Create(cc))
+	assert.NotNil(t, cc)
+
+	cc2 := *cc
+	cc2.Name = "test2"
+	assert.NoError(t, s.CharacterClass().Create(&cc2))
+
+	classes, err := s.CharacterClass().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, classes)
+
+	assert.Equal(t, len(classes), 2)
+}
+
 func TestCharacterClassRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.CharacterClassT)
+	defer teardown(sqlstore.CharacterClassT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 
@@ -32,6 +62,9 @@ func TestCharacterClassRepository_Find(t *testing.T) {
 	assert.EqualError(t, err, store.ErrorRecordNotFound.Error())
 
 	a := model.TestCharacterClass(t)
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	a.UserId = u.ID
 	_ = s.CharacterClass().Create(a)
 
 	a, err = s.CharacterClass().Find(a.ID)
@@ -42,13 +75,16 @@ func TestCharacterClassRepository_Find(t *testing.T) {
 func TestCharacterClassRepository_Update(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.CharacterClassT)
+	defer teardown(sqlstore.CharacterClassT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	characterClass := model.TestCharacterClass(t)
 
 	assert.NoError(t, s.CharacterClass().Update(characterClass))
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	characterClass.UserId = u.ID
 	_ = s.CharacterClass().Create(characterClass)
 	characterClass.Name = "UpdatedName"
 
@@ -63,13 +99,16 @@ func TestCharacterClassRepository_Update(t *testing.T) {
 func TestCharacterClassRepository_Delete(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 
-	defer teardown(sqlstore.CharacterClassT)
+	defer teardown(sqlstore.CharacterClassT, sqlstore.UsersT)
 
 	s := sqlstore.New(db)
 	characterClass := model.TestCharacterClass(t)
 
 	assert.NoError(t, s.CharacterClass().Delete(characterClass.ID))
 
+	u := model.TestUser(t)
+	assert.NoError(t, s.User().Create(u))
+	characterClass.UserId = u.ID
 	_ = s.CharacterClass().Create(characterClass)
 	characterClass, _ = s.CharacterClass().Find(characterClass.ID)
 	assert.NotNil(t, characterClass)

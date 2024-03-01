@@ -47,3 +47,25 @@ func TestUserRepository_Find(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, u)
 }
+
+func TestUserRepository_Update(t *testing.T) {
+	s := teststore.New()
+
+	user := model.TestUser(t)
+	_ = s.User().Create(user)
+
+	pass := "NewPass1"
+	name := "NewName"
+	user.Password = pass
+	user.Nickname = name
+
+	err := s.User().Update(user)
+	assert.NoError(t, err)
+
+	var updatedUser *model.User
+	updatedUser, err = s.User().Find(user.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, updatedUser)
+	assert.Equal(t, updatedUser.Password, pass)
+	assert.Equal(t, updatedUser.Nickname, name)
+}

@@ -15,23 +15,26 @@ func TestSkill(t *testing.T) *Skill {
 	return &Skill{
 		Name:       "skill",
 		Icon:       "path/icon",
-		CategoryId: 0,
+		CategoryId: -1,
+		UserId:     1,
 	}
 }
 
 func TestSkillCategory(t *testing.T) *SkillCategory {
 	t.Helper()
 	return &SkillCategory{
-		Name: "skill",
-		Icon: "path/icon",
+		Name:   "skill",
+		Icon:   "path/icon",
+		UserId: 1,
 	}
 }
 
 func TestRace(t *testing.T) *Race {
 	t.Helper()
 	return &Race{
-		Name:  "race",
-		Model: "path/model",
+		Name:   "race",
+		Model:  "path/model",
+		UserId: 1,
 	}
 }
 
@@ -42,14 +45,16 @@ func TestAction(t *testing.T) *Action {
 		Icon:    "path/icon",
 		SkillId: 0,
 		Points:  0,
+		UserId:  1,
 	}
 }
 
 func TestCharacterClass(t *testing.T) *CharacterClass {
 	t.Helper()
 	return &CharacterClass{
-		Name: "race",
-		Icon: "path/icon",
+		Name:   "race",
+		Icon:   "path/icon",
+		UserId: 1,
 	}
 }
 

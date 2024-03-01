@@ -60,6 +60,16 @@ func TestAction_Validate(t *testing.T) {
 			},
 			isValid: false,
 		},
+		{
+			name: "not valid user id",
+			a: func() *model.Action {
+				a := model.TestAction(t)
+				a.UserId = 0
+
+				return a
+			},
+			isValid: false,
+		},
 	}
 
 	for _, tc := range testCases {

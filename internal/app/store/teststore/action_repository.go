@@ -23,6 +23,17 @@ func (r *ActionRepository) Create(a *model.Action) error {
 	return nil
 }
 
+// Get ...
+func (r *ActionRepository) Get() ([]*model.Action, error) {
+	var actions []*model.Action
+
+	for i := range r.actions {
+		actions = append(actions, r.actions[i])
+	}
+
+	return actions, nil
+}
+
 // Find ...
 func (r *ActionRepository) Find(id int) (*model.Action, error) {
 	a, ok := r.actions[id]
@@ -48,6 +59,7 @@ func (r *ActionRepository) Update(a *model.Action) error {
 	source.Icon = a.Icon
 	source.Points = a.Points
 	source.SkillId = a.SkillId
+	source.UserId = a.UserId
 
 	return nil
 }

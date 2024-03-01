@@ -12,6 +12,7 @@ type Action struct {
 	Icon       string        `json:"icon"`
 	Points     int           `json:"points"`
 	SkillId    int           `json:"skill_id"`
+	UserId     int           `json:"user_id"`
 	RefSkillId sql.NullInt64 `json:"-"`
 }
 
@@ -22,6 +23,7 @@ func (a *Action) Validate() error {
 		validation.Field(&a.Name, validation.Required, validation.Length(1, 100)),
 		validation.Field(&a.Points, validation.Min(0)),
 		validation.Field(&a.SkillId, validation.Min(0)),
+		validation.Field(&a.UserId, validation.Required, validation.Min(1)),
 	)
 }
 
@@ -36,5 +38,5 @@ func (a *Action) BeforeInsertOrUpdate() error {
 }
 
 func (a *Action) AfterScan() {
-	getDefaultOrValue(0, a.RefSkillId)
+	a.SkillId = getDefaultOrValue(0, a.RefSkillId)
 }

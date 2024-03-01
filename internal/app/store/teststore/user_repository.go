@@ -42,3 +42,14 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 	}
 	return u, nil
 }
+
+func (r *UserRepository) Update(u *model.User) error {
+	err := u.Validate()
+	if err != nil {
+		return err
+	}
+
+	r.users[u.ID] = u
+
+	return nil
+}

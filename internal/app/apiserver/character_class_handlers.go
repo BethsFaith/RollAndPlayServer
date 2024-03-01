@@ -20,9 +20,11 @@ func (s *server) handleClassCreate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		class := &model.CharacterClass{
-			Name: req.Name,
-			Icon: req.Icon,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 		if err := s.store.CharacterClass().Create(class); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -30,6 +32,18 @@ func (s *server) handleClassCreate() http.HandlerFunc {
 		}
 
 		s.respond(w, http.StatusCreated, class)
+	}
+}
+
+func (s *server) handleClassGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		classes, err := s.store.CharacterClass().Get()
+		if err != nil {
+			s.error(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		s.respond(w, http.StatusOK, classes)
 	}
 }
 
@@ -47,10 +61,12 @@ func (s *server) handleClassUpdate() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		class := &model.CharacterClass{
-			ID:   req.ID,
-			Name: req.Name,
-			Icon: req.Icon,
+			ID:     req.ID,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 
 		oldClassData, err := s.store.CharacterClass().Find(class.ID)
@@ -82,10 +98,12 @@ func (s *server) handleClassDelete() http.HandlerFunc {
 			return
 		}
 
+		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		class := &model.CharacterClass{
-			ID:   req.ID,
-			Name: req.Name,
-			Icon: req.Icon,
+			ID:     req.ID,
+			Name:   req.Name,
+			Icon:   req.Icon,
+			UserId: authUser.ID,
 		}
 
 		if err := s.store.CharacterClass().Delete(class.ID); err != nil {

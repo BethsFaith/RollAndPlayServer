@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 )
 
@@ -80,7 +81,7 @@ func TestServer_HandleUsersCreate(t *testing.T) {
 			expectedCode: http.StatusCreated,
 		},
 		{
-			name:         "invalid payload",
+			name:         "invalid user",
 			payload:      "invalid",
 			expectedCode: http.StatusBadRequest,
 		},
@@ -132,7 +133,7 @@ func TestServer_HandleSessionsCreate(t *testing.T) {
 			expectedCode: http.StatusOK,
 		},
 		{
-			name:         "invalid payload",
+			name:         "invalid user",
 			payload:      "invalid",
 			expectedCode: http.StatusBadRequest,
 		},
@@ -158,11 +159,102 @@ func TestServer_HandleSessionsCreate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			rec := httptest.NewRecorder()
 			b := &bytes.Buffer{}
-			json.NewEncoder(b).Encode(tc.payload)
+			_ = json.NewEncoder(b).Encode(tc.payload)
 			req := httptest.NewRequest(http.MethodPost, "/sessions", b)
 
 			s.ServeHTTP(rec, req)
 
+			assert.Equal(t, tc.expectedCode, rec.Code)
+		})
+	}
+}
+
+func TestServer_HandleUserUpdate(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	TestAuthUser(s, u)
+
+	testCases := []struct {
+		name         string
+		user         interface{}
+		expectedCode int
+	}{
+		{
+			name: "valid",
+			user: map[string]string{
+				"email":    u.Email,
+				"password": u.Password,
+				"nickname": u.Nickname,
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "valid",
+			user: map[string]string{
+				"email":    u.Email,
+				"password": u.Password,
+				"nickname": "Nik10",
+			},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "no valid",
+			user: map[string]string{
+				"email":    "",
+				"password": u.Password,
+				"nickname": "Nik10",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "no valid",
+			user: map[string]string{
+				"password": u.Password,
+				"nickname": "Nik10",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "no valid",
+			user: map[string]string{
+				"email":    u.Email,
+				"password": "",
+				"nickname": "Nik10",
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "no valid",
+			user: map[string]string{
+				"password": u.Password,
+				"nickname": "Nik10",
+				"id":       strconv.Itoa(u.ID + 1),
+			},
+			expectedCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+
+			b := &bytes.Buffer{}
+			err := json.NewEncoder(b).Encode(tc.user)
+			assert.NoError(t, err)
+
+			req, _ := http.NewRequest(http.MethodPut, "/private/users", b)
+
+			TestSetCookie(req, u, sc)
+
+			s.ServeHTTP(rec, req)
 			assert.Equal(t, tc.expectedCode, rec.Code)
 		})
 	}

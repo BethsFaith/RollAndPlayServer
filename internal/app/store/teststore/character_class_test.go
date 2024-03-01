@@ -16,6 +16,29 @@ func TestCharacterClassRepository_Create(t *testing.T) {
 	assert.NotNil(t, c)
 }
 
+func TestCharacterClassRepository_Get(t *testing.T) {
+	s := teststore.New()
+
+	cc := model.TestCharacterClass(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	cc.UserId = u.ID
+
+	assert.NoError(t, s.CharacterClass().Create(cc))
+	assert.NotNil(t, cc)
+
+	cc2 := *cc
+	cc2.Name = "test2"
+	assert.NoError(t, s.CharacterClass().Create(&cc2))
+
+	classes, err := s.CharacterClass().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, classes)
+	assert.Equal(t, *cc, *classes[0])
+	assert.Equal(t, cc2, *classes[1])
+}
+
 func TestCharacterClassRepository_Find(t *testing.T) {
 	s := teststore.New()
 

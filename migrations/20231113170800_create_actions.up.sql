@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS Actions
     icon VARCHAR(1024),
     skill_id INTEGER,
     points INTEGER NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE cascade,
 
     CONSTRAINT Actions_pkey PRIMARY KEY (id),
     FOREIGN KEY (skill_id) REFERENCES Skills(id) ON DELETE SET NULL

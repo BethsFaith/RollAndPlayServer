@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS public.Races;
+DROP TABLE IF EXISTS public.Races cascade;
