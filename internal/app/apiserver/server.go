@@ -48,6 +48,7 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
 
 	s.router.HandleFunc("/view-user", s.handleUser()).Methods("GET")
+	s.router.HandleFunc("/characteristics", s.handleCharacteristicGet()).Methods("GET")
 	s.router.HandleFunc("/skills", s.handleSkillGet()).Methods("GET")
 	s.router.HandleFunc("/skill-categories", s.handleSkillCategoryGet()).Methods("GET")
 	s.router.HandleFunc("/races", s.handleRaceGet()).Methods("GET")
@@ -60,6 +61,10 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/who-am-i", s.handleWhoami()).Methods("GET")
 
 	private.HandleFunc("/users", s.handleUsersUpdate()).Methods("PUT")
+
+	private.HandleFunc("/characteristics", s.handleCharacteristicCreate()).Methods("POST")
+	private.HandleFunc("/characteristics", s.handleCharacteristicUpdate()).Methods("PUT")
+	private.HandleFunc("/characteristics", s.handleCharacteristicDelete()).Methods("DELETE")
 
 	private.HandleFunc("/skills", s.handleSkillCreate()).Methods("POST")
 	private.HandleFunc("/skills", s.handleSkillUpdate()).Methods("PUT")
