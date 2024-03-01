@@ -28,7 +28,7 @@ func (sc *SkillCategory) Validate() error {
 	return validation.ValidateStruct(
 		sc,
 		validation.Field(&sc.Name, validation.Required),
-		validation.Field(&sc.UserId, validation.Required, validation.Min(1)),
+		validation.Field(&sc.UserId, validation.Required, validation.Min(0)),
 	)
 }
 
