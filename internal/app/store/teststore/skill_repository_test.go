@@ -28,6 +28,77 @@ func TestSkillRepository_CreateCategory(t *testing.T) {
 	assert.NotNil(t, c)
 }
 
+func TestSkillRepository_Get(t *testing.T) {
+	s := teststore.New()
+	skill := model.TestSkill(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
+
+	assert.NoError(t, s.Skill().Create(skill))
+	assert.NotNil(t, skill)
+
+	skill.Name = "test2"
+	assert.NoError(t, s.Skill().Create(skill))
+
+	skills, err := s.Skill().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, skills)
+
+	assert.Equal(t, 2, len(skills))
+}
+
+func TestSkillRepository_GetByCategory(t *testing.T) {
+	s := teststore.New()
+	skill := model.TestSkill(t)
+	c := model.TestSkillCategory(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	skill.UserId = u.ID
+	c.UserId = u.ID
+
+	assert.NoError(t, s.Skill().CreateCategory(c))
+	assert.NotNil(t, c)
+	skill.CategoryId = c.ID
+
+	assert.NoError(t, s.Skill().Create(skill))
+	assert.NotNil(t, skill)
+
+	skill2 := model.TestSkill(t)
+	skill2.Name = "test2"
+	skill2.CategoryId = 0
+	assert.NoError(t, s.Skill().Create(skill2))
+
+	skills, err := s.Skill().GetByCategory(c.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, skills)
+
+	assert.Equal(t, 1, len(skills))
+}
+
+func TestSkillRepository_GetCategories(t *testing.T) {
+	s := teststore.New()
+	c := model.TestSkillCategory(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	c.UserId = u.ID
+
+	assert.NoError(t, s.Skill().CreateCategory(c))
+	assert.NotNil(t, c)
+
+	c.Name = "test2"
+	assert.NoError(t, s.Skill().CreateCategory(c))
+
+	categories, err := s.Skill().GetCategories()
+	assert.NoError(t, err)
+	assert.NotNil(t, categories)
+
+	assert.Equal(t, 2, len(categories))
+}
+
 func TestSkillRepository_Find(t *testing.T) {
 	s := teststore.New()
 

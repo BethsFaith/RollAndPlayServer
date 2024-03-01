@@ -73,6 +73,29 @@ func TestServer_handleClassCreate(t *testing.T) {
 	}
 }
 
+func TestServer_handleClassGet(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	rec := httptest.NewRecorder()
+
+	b := &bytes.Buffer{}
+
+	req, _ := http.NewRequest(http.MethodGet, "/classes", b)
+
+	TestSetCookie(req, u, sc)
+
+	s.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
 func TestServer_handleClassUpdate(t *testing.T) {
 	logger := log.TestLogger()
 

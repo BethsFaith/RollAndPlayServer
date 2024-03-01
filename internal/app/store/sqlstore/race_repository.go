@@ -18,8 +18,33 @@ func (r *RaceRepository) Create(s *model.Race) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+RacesT+RacesP+"values ($1, $2) RETURNING id", s.Name, s.Model,
+		InsertQ+RacesT+RacesP+"values ($1, $2, $3) RETURNING id", s.Name, s.Model, s.UserId,
 	).Scan(&s.ID)
+}
+
+// Get ...
+func (r *RaceRepository) Get() ([]*model.Race, error) {
+	var races []*model.Race
+
+	bRows, err := r.store.SelectRows(
+		SelectQ + RacesT,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for bRows.Next() {
+		cc := &model.Race{}
+
+		err := bRows.Scan(&cc.ID, &cc.Name, &cc.Model, &cc.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		races = append(races, cc)
+	}
+
+	return races, nil
 }
 
 // Find ...
@@ -32,6 +57,7 @@ func (r *RaceRepository) Find(id int) (*model.Race, error) {
 		&race.ID,
 		&race.Name,
 		&race.Model,
+		&race.UserId,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, store.ErrorRecordNotFound
@@ -49,7 +75,8 @@ func (r *RaceRepository) Update(s *model.Race) error {
 	}
 
 	_, err := r.store.Update(
-		UpdateQ+RacesT+"SET name = $1, model = $2 WHERE id = $3", s.Name, s.Model, s.ID,
+		UpdateQ+RacesT+"SET name = $1, model = $2, user_id = $3 WHERE id = $4",
+		s.Name, s.Model, s.UserId, s.ID,
 	)
 
 	return err

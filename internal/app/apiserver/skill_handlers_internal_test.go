@@ -134,6 +134,53 @@ func TestServer_handleSkillCategoryCreate(t *testing.T) {
 	}
 }
 
+func TestServer_handleSkillsGet(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	rec := httptest.NewRecorder()
+
+	b := &bytes.Buffer{}
+
+	req, _ := http.NewRequest(http.MethodGet, "/skills", b)
+
+	TestSetCookie(req, u, sc)
+
+	s.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+}
+
+func TestServer_handleSkillCategoryGet(t *testing.T) {
+	logger := log.TestLogger()
+
+	store := teststore.New()
+
+	u := model.TestUser(t)
+	_ = store.User().Create(u)
+
+	cookieStore, sc := TestCookie()
+	s := newServer(store, cookieStore, logger)
+
+	rec := httptest.NewRecorder()
+
+	b := &bytes.Buffer{}
+
+	req, _ := http.NewRequest(http.MethodGet, "/skill-categories", b)
+
+	TestSetCookie(req, u, sc)
+
+	s.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+}
+
 func TestServer_handleSkillUpdate(t *testing.T) {
 	logger := log.TestLogger()
 

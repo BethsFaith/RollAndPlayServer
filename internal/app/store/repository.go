@@ -7,12 +7,16 @@ type UserRepository interface {
 	Create(*model.User) error
 	Find(int) (*model.User, error)
 	FindByEmail(string) (*model.User, error)
+	Update(u *model.User) error
 }
 
 // SkillRepository ...
 type SkillRepository interface {
 	Create(*model.Skill) error
 	CreateCategory(*model.SkillCategory) error
+	Get() ([]*model.Skill, error)
+	GetByCategory(id int) ([]*model.Skill, error)
+	GetCategories() ([]*model.SkillCategory, error)
 	Find(int) (*model.Skill, error)
 	FindCategory(int) (*model.SkillCategory, error)
 	Update(*model.Skill) error
@@ -23,6 +27,7 @@ type SkillRepository interface {
 
 type RaceRepository interface {
 	Create(*model.Race) error
+	Get() ([]*model.Race, error)
 	Find(int) (*model.Race, error)
 	Update(*model.Race) error
 	Delete(id int) error
@@ -30,6 +35,7 @@ type RaceRepository interface {
 
 type ActionRepository interface {
 	Create(*model.Action) error
+	Get() ([]*model.Action, error)
 	Find(int) (*model.Action, error)
 	Update(*model.Action) error
 	Delete(id int) error
@@ -37,6 +43,7 @@ type ActionRepository interface {
 
 type CharacterClassRepository interface {
 	Create(*model.CharacterClass) error
+	Get() ([]*model.CharacterClass, error)
 	Find(int) (*model.CharacterClass, error)
 	Update(*model.CharacterClass) error
 	Delete(id int) error
@@ -45,6 +52,7 @@ type CharacterClassRepository interface {
 type RaceBonusRepository interface {
 	Create(*model.RaceBonus) error
 	Find(int, int) (*model.RaceBonus, error)
+	FindBySkillId(int) ([]*model.RaceBonus, error)
 	FindByRaceId(int) ([]*model.RaceBonus, error)
 	Update(*model.RaceBonus) error
 	Delete(int, int) error
@@ -54,6 +62,7 @@ type CharacterClassBonusRepository interface {
 	Create(*model.CharacterClassBonus) error
 	Find(int, int) (*model.CharacterClassBonus, error)
 	FindByClassId(int) ([]*model.CharacterClassBonus, error)
+	FindBySkillId(skillId int) ([]*model.CharacterClassBonus, error)
 	Update(*model.CharacterClassBonus) error
 	Delete(int, int) error
 }

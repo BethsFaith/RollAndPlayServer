@@ -16,6 +16,29 @@ func TestActionRepository_Create(t *testing.T) {
 	assert.NotNil(t, a)
 }
 
+func TestActionRepository_Get(t *testing.T) {
+	s := teststore.New()
+
+	a := model.TestAction(t)
+	u := model.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
+	a.UserId = u.ID
+
+	assert.NoError(t, s.Action().Create(a))
+	assert.NotNil(t, a)
+
+	a2 := *a
+	a2.Name = "test2"
+	assert.NoError(t, s.Action().Create(&a2))
+
+	actions, err := s.Action().Get()
+	assert.NoError(t, err)
+	assert.NotNil(t, actions)
+	assert.Equal(t, *a, *actions[0])
+	assert.Equal(t, a2, *actions[1])
+}
+
 func TestActionRepository_Find(t *testing.T) {
 	s := teststore.New()
 

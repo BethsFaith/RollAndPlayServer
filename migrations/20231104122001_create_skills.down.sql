@@ -1,2 +1,2 @@
-DROP TABLE Skills;
-DROP TABLE Skill_Categories;
+DROP TABLE Skills cascade;
+DROP TABLE Skill_Categories cascade ;

@@ -16,6 +16,9 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 		return err
 	}
 
+	if err := s.BeforeInsertOrUpdate(); err != nil {
+		return err
+	}
 	if s.RefCategoryId.Valid {
 		_, ok := r.categories[s.CategoryId]
 		if !ok {
@@ -40,6 +43,38 @@ func (r *SkillRepository) CreateCategory(c *model.SkillCategory) error {
 	return nil
 }
 
+func (r *SkillRepository) Get() ([]*model.Skill, error) {
+	var skills []*model.Skill
+
+	for i := range r.skills {
+		skills = append(skills, r.skills[i])
+	}
+
+	return skills, nil
+}
+
+func (r *SkillRepository) GetByCategory(id int) ([]*model.Skill, error) {
+	var skills []*model.Skill
+
+	for i := range r.skills {
+		if r.skills[i].CategoryId == id {
+			skills = append(skills, r.skills[i])
+		}
+	}
+
+	return skills, nil
+}
+
+func (r *SkillRepository) GetCategories() ([]*model.SkillCategory, error) {
+	var categories []*model.SkillCategory
+
+	for i := range r.categories {
+		categories = append(categories, r.categories[i])
+	}
+
+	return categories, nil
+}
+
 func (r *SkillRepository) Find(id int) (*model.Skill, error) {
 	s, ok := r.skills[id]
 	if !ok {
@@ -62,8 +97,10 @@ func (r *SkillRepository) Update(skill *model.Skill) error {
 		return store.ErrorRecordNotFound
 	}
 
-	err := s.Validate()
-	if err != nil {
+	if err := s.Validate(); err != nil {
+		return err
+	}
+	if err := s.BeforeInsertOrUpdate(); err != nil {
 		return err
 	}
 	if skill.RefCategoryId.Valid {

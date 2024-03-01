@@ -7,9 +7,10 @@ import (
 
 // SkillCategory ...
 type SkillCategory struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Icon string `json:"icon"`
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Icon   string `json:"icon"`
+	UserId int    `json:"user_id"`
 }
 
 // Skill ...
@@ -19,6 +20,7 @@ type Skill struct {
 	Icon          string        `json:"icon"`
 	CategoryId    int           `json:"category_id"`
 	RefCategoryId sql.NullInt64 `json:"-"`
+	UserId        int           `json:"user_id"`
 }
 
 // Validate ...
@@ -26,6 +28,7 @@ func (sc *SkillCategory) Validate() error {
 	return validation.ValidateStruct(
 		sc,
 		validation.Field(&sc.Name, validation.Required),
+		validation.Field(&sc.UserId, validation.Required, validation.Min(1)),
 	)
 }
 
@@ -34,7 +37,8 @@ func (s *Skill) Validate() error {
 	return validation.ValidateStruct(
 		s,
 		validation.Field(&s.Name, validation.Required),
-		validation.Field(&s.CategoryId, validation.Min(0)),
+		validation.Field(&s.CategoryId, validation.Min(-1)),
+		validation.Field(&s.UserId, validation.Required, validation.Min(1)),
 	)
 }
 
@@ -49,5 +53,5 @@ func (s *Skill) BeforeInsertOrUpdate() error {
 }
 
 func (s *Skill) AfterScan() {
-	getDefaultOrValue(0, s.RefCategoryId)
+	s.CategoryId = getDefaultOrValue(-1, s.RefCategoryId)
 }
