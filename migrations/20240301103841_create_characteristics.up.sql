@@ -1,0 +1,10 @@
+CREATE TABLE Characteristics
+(
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 0 MAXVALUE 2147483646 CACHE 1 ),
+    name VARCHAR(255) NOT NULL,
+    icon VARCHAR(1024),
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE cascade,
+
+    CONSTRAINT Characteristics_pkey PRIMARY KEY (id)
+);
+
