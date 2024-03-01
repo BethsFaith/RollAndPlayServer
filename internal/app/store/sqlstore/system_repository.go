@@ -17,7 +17,7 @@ func (r *SystemRepository) Create(s *model.System) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+SystemsT+SystemP+"values ($1, $2) RETURNING id", s.Name, s.Icon,
+		InsertQ+SystemsT+SystemsP+"values ($1, $2) RETURNING id", s.Name, s.Icon,
 	).Scan(&s.ID)
 }
 

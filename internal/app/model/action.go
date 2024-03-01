@@ -28,7 +28,7 @@ func (a *Action) Validate() error {
 }
 
 func (a *Action) BeforeInsertOrUpdate() error {
-	if a.SkillId > 0 {
+	if a.SkillId >= 0 {
 		err := a.RefSkillId.Scan(a.SkillId)
 		return err
 	} else {
@@ -38,5 +38,5 @@ func (a *Action) BeforeInsertOrUpdate() error {
 }
 
 func (a *Action) AfterScan() {
-	a.SkillId = getDefaultOrValue(0, a.RefSkillId)
+	a.SkillId = getDefaultOrValue(-1, a.RefSkillId)
 }

@@ -40,14 +40,32 @@ func (s *server) handleActionCreate() http.HandlerFunc {
 }
 
 func (s *server) handleActionGet() http.HandlerFunc {
+	type request struct {
+		ID      int    `json:"id"`
+		Name    string `json:"name"`
+		Icon    string `json:"icon"`
+		SkillId int    `json:"skill_id"`
+		Points  int    `json:"points"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		actions, err := s.store.Action().Get()
-		if err != nil {
-			s.error(w, http.StatusInternalServerError, err)
-			return
-		}
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			actions, err := s.store.Action().Get()
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
 
-		s.respond(w, http.StatusOK, actions)
+			s.respond(w, http.StatusOK, actions)
+		} else {
+
+			action, err := s.store.Action().Find(req.ID)
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
+			s.respond(w, http.StatusOK, action)
+		}
 	}
 }
 
