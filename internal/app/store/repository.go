@@ -66,3 +66,19 @@ type CharacterClassBonusRepository interface {
 	Update(*model.CharacterClassBonus) error
 	Delete(int, int) error
 }
+
+type SystemRepository interface {
+	Create(*model.System) error
+	Find(int) (*model.System, error)
+	GetRaces(int) ([]*model.SystemComponent, error)
+	GetSkillCategories(int) ([]*model.SystemComponent, error)
+	GetCharacterClasses(int) ([]*model.SystemComponent, error)
+	AddRace(int, int) ([]*model.SystemComponent, error)
+	AddSkillCategory(int, int) ([]*model.SystemComponent, error)
+	AddCharacterClass(int, int) ([]*model.SystemComponent, error)
+	Update(*model.System) error
+	Delete(int) error
+	DeleteRace(int, int) error
+	DeleteCharacterClass(int, int) error
+	DeleteSkillCategory(int, int) error
+}

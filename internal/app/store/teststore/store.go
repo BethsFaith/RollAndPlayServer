@@ -13,6 +13,7 @@ type Store struct {
 	classRepository               *CharacterClassRepository
 	raceBonusRepository           *RaceBonusRepository
 	characterClassBonusRepository *CharacterClassBonusRepository
+	systemRepository              *SystemRepository
 }
 
 func New() *Store {
@@ -109,4 +110,20 @@ func (s *Store) CharacterClassBonus() store.CharacterClassBonusRepository {
 	}
 
 	return s.characterClassBonusRepository
+}
+
+func (s *Store) System() store.SystemRepository {
+	if s.systemRepository != nil {
+		return s.systemRepository
+	}
+
+	s.systemRepository = &SystemRepository{
+		store:      s,
+		systems:    make(map[int]*model.System),
+		races:      make(map[int][]*model.SystemComponent),
+		classes:    make(map[int][]*model.SystemComponent),
+		categories: make(map[int][]*model.SystemComponent),
+	}
+
+	return s.systemRepository
 }

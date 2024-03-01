@@ -75,3 +75,11 @@ func TestCharacterClassBonus(t *testing.T) *CharacterClassBonus {
 		Bonus:   1,
 	}
 }
+
+func TestSystem(t *testing.T) *System {
+	t.Helper()
+	return &System{
+		Name: "system",
+		Icon: "path/icon",
+	}
+}
