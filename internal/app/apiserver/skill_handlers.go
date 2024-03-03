@@ -9,9 +9,10 @@ import (
 
 func (s *server) handleSkillCreate() http.HandlerFunc {
 	type request struct {
-		Name       string `json:"name"`
-		Icon       string `json:"icon"`
-		CategoryId int    `json:"category_id"`
+		Name             string `json:"name"`
+		Icon             string `json:"icon"`
+		CategoryId       int    `json:"category_id"`
+		CharacteristicId int    `json:"characteristic_id"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -23,10 +24,11 @@ func (s *server) handleSkillCreate() http.HandlerFunc {
 
 		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		skill := &model.Skill{
-			Name:       req.Name,
-			Icon:       req.Icon,
-			CategoryId: req.CategoryId,
-			UserId:     authUser.ID,
+			Name:             req.Name,
+			Icon:             req.Icon,
+			CategoryId:       req.CategoryId,
+			CharacteristicId: req.CharacteristicId,
+			UserId:           authUser.ID,
 		}
 		if err := s.store.Skill().Create(skill); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
@@ -92,10 +94,9 @@ func (s *server) handleSkillGet() http.HandlerFunc {
 
 func (s *server) handleSkillCategoryGet() http.HandlerFunc {
 	type request struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Icon       string `json:"icon"`
-		CategoryId int    `json:"category_id"`
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Icon string `json:"icon"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -120,10 +121,11 @@ func (s *server) handleSkillCategoryGet() http.HandlerFunc {
 
 func (s *server) handleSkillUpdate() http.HandlerFunc {
 	type request struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Icon       string `json:"icon"`
-		CategoryId int    `json:"category_id"`
+		ID               int    `json:"id"`
+		Name             string `json:"name"`
+		Icon             string `json:"icon"`
+		CategoryId       int    `json:"category_id"`
+		CharacteristicId int    `json:"characteristic_id"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -135,11 +137,12 @@ func (s *server) handleSkillUpdate() http.HandlerFunc {
 
 		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		skill := &model.Skill{
-			ID:         req.ID,
-			Name:       req.Name,
-			Icon:       req.Icon,
-			CategoryId: req.CategoryId,
-			UserId:     authUser.ID,
+			ID:               req.ID,
+			Name:             req.Name,
+			Icon:             req.Icon,
+			CategoryId:       req.CategoryId,
+			CharacteristicId: req.CharacteristicId,
+			UserId:           authUser.ID,
 		}
 
 		oldSkillData, err := s.store.Skill().Find(skill.ID)
@@ -201,10 +204,7 @@ func (s *server) handleSkillCategoryUpdate() http.HandlerFunc {
 
 func (s *server) handleSkillDelete() http.HandlerFunc {
 	type request struct {
-		ID         int    `json:"id"`
-		Name       string `json:"name"`
-		Icon       string `json:"icon"`
-		CategoryId int    `json:"category_id"`
+		ID int `json:"id"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -217,8 +217,6 @@ func (s *server) handleSkillDelete() http.HandlerFunc {
 		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		skill := &model.Skill{
 			ID:     req.ID,
-			Name:   req.Name,
-			Icon:   req.Icon,
 			UserId: authUser.ID,
 		}
 		if err := s.store.Skill().Delete(skill.ID); err != nil {
