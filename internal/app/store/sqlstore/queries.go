@@ -22,7 +22,7 @@ const SystemActionsT = "game_system_actions "
 
 const UsersP = "(email, nickname, encrypted_password) "
 const CharacteristicsP = "(name, icon, user_id) "
-const SkillsP = "(name, icon, category_id, user_id) "
+const SkillsP = "(name, icon, category_id, characteristic_id, user_id) "
 const SkillCategoriesP = "(name, icon, user_id) "
 const RacesP = "(name, model, user_id) "
 const CharacterClassesP = "(name, icon, user_id) "

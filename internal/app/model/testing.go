@@ -22,10 +22,11 @@ func TestCharacteristic(t *testing.T) *Characteristic {
 func TestSkill(t *testing.T) *Skill {
 	t.Helper()
 	return &Skill{
-		Name:       "skill",
-		Icon:       "path/icon",
-		CategoryId: -1,
-		UserId:     1,
+		Name:             "skill",
+		Icon:             "path/icon",
+		CategoryId:       0,
+		CharacteristicId: 0,
+		UserId:           1,
 	}
 }
 
