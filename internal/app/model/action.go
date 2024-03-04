@@ -23,12 +23,12 @@ func (a *Action) Validate() error {
 		validation.Field(&a.Name, validation.Required, validation.Length(1, 100)),
 		validation.Field(&a.Points, validation.Min(0)),
 		validation.Field(&a.SkillId, validation.Min(0)),
-		validation.Field(&a.UserId, validation.Required, validation.Min(0)),
+		validation.Field(&a.UserId, validation.Required, validation.Min(1)),
 	)
 }
 
 func (a *Action) BeforeInsertOrUpdate() error {
-	if a.SkillId >= 0 {
+	if a.SkillId > 0 {
 		err := a.RefSkillId.Scan(a.SkillId)
 		return err
 	} else {
@@ -38,5 +38,5 @@ func (a *Action) BeforeInsertOrUpdate() error {
 }
 
 func (a *Action) AfterScan() {
-	a.SkillId = getDefaultOrValue(-1, a.RefSkillId)
+	a.SkillId = getDefaultOrValue(0, a.RefSkillId)
 }

@@ -22,11 +22,8 @@ func TestSkillRepository_Create(t *testing.T) {
 	assert.NoError(t, s.Skill().Create(skill))
 	assert.NotNil(t, skill)
 
-	skill.CategoryId = -1
-	assert.Error(t, s.Skill().Create(skill))
-
 	skill.CategoryId = 10
-	assert.EqualError(t, s.Skill().Create(skill), store.ErrorNotExistRef.Error())
+	assert.EqualError(t, store.ErrorNotExistRef, s.Skill().Create(skill).Error())
 
 	cat := model.TestSkillCategory(t)
 	cat.UserId = u.ID

@@ -28,8 +28,8 @@ func (r *SkillRepository) Create(s *model.Skill) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+SkillsT+SkillsP+"values ($1, $2, $3, $4) RETURNING id",
-		s.Name, s.Icon, s.RefCategoryId, s.UserId,
+		InsertQ+SkillsT+SkillsP+"values ($1, $2, $3, $4, $5) RETURNING id",
+		s.Name, s.Icon, s.RefCategoryId, s.RefCharacteristicId, s.UserId,
 	).Scan(&s.ID)
 }
 
@@ -55,7 +55,7 @@ func (r *SkillRepository) Get() ([]*model.Skill, error) {
 	for bRows.Next() {
 		s := &model.Skill{}
 
-		err := bRows.Scan(&s.ID, &s.Name, &s.Icon, &s.RefCategoryId, &s.UserId)
+		err := bRows.Scan(&s.ID, &s.Name, &s.Icon, &s.RefCategoryId, &s.RefCharacteristicId, &s.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -131,6 +131,7 @@ func (r *SkillRepository) Find(id int) (*model.Skill, error) {
 		&s.Name,
 		&s.Icon,
 		&s.RefCategoryId,
+		&s.RefCharacteristicId,
 		&s.UserId,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -175,7 +176,8 @@ func (r *SkillRepository) Update(s *model.Skill) error {
 	}
 
 	_, err := r.store.Update(
-		UpdateQ+SkillsT+"SET name = $1, icon = $2, category_id = $3, user_id = $4  WHERE id = $5",
+		UpdateQ+SkillsT+"SET name = $1, icon = $2, category_id = $3, characteristic_id = $4, user_id = $5"+
+			" WHERE id = $5",
 		s.Name, s.Icon, s.RefCategoryId, s.UserId, s.ID,
 	)
 

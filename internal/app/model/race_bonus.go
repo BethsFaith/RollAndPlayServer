@@ -13,6 +13,6 @@ func (rb *RaceBonus) Validate() error {
 		rb,
 		validation.Field(&rb.SkillId, validation.Required, validation.Min(1)),
 		validation.Field(&rb.RaceId, validation.Required, validation.Min(1)),
-		validation.Field(&rb.Bonus, validation.Required, validation.Min(0)),
+		validation.Field(&rb.Bonus, validation.Required, validation.Min(1)),
 	)
 }
