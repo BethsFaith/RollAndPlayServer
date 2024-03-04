@@ -15,6 +15,6 @@ func (c *Characteristic) Validate() error {
 	return validation.ValidateStruct(
 		c,
 		validation.Field(&c.Name, validation.Required),
-		validation.Field(&c.UserId, validation.Required, validation.Min(0)),
+		validation.Field(&c.UserId, validation.Required, validation.Min(1)),
 	)
 }

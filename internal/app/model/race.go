@@ -15,6 +15,6 @@ func (r *Race) Validate() error {
 	return validation.ValidateStruct(
 		r,
 		validation.Field(&r.Name, validation.Required, validation.Length(1, 100)),
-		validation.Field(&r.UserId, validation.Required, validation.Min(0)),
+		validation.Field(&r.UserId, validation.Required, validation.Min(1)),
 	)
 }
