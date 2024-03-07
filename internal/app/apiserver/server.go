@@ -52,6 +52,7 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/skills", s.handleSkillGet()).Methods("GET")
 	s.router.HandleFunc("/skill-categories", s.handleSkillCategoryGet()).Methods("GET")
 	s.router.HandleFunc("/races", s.handleRaceGet()).Methods("GET")
+	s.router.HandleFunc("/items", s.handleItemGet()).Methods("GET")
 	s.router.HandleFunc("/actions", s.handleActionGet()).Methods("GET")
 	s.router.HandleFunc("/classes", s.handleClassGet()).Methods("GET")
 
@@ -74,6 +75,17 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryUpdate()).Methods("PUT")
 	private.HandleFunc("/skill-categories", s.handleSkillCategoryDelete()).Methods("DELETE")
 
+	private.HandleFunc("/actions", s.handleActionCreate()).Methods("POST")
+	private.HandleFunc("/actions", s.handleActionUpdate()).Methods("PUT")
+	private.HandleFunc("/actions", s.handleActionDelete()).Methods("DELETE")
+
+	private.HandleFunc("/items", s.handleItemCreate()).Methods("POST")
+	private.HandleFunc("/items", s.handleItemUpdate()).Methods("PUT")
+	private.HandleFunc("/items", s.handleItemDelete()).Methods("DELETE")
+	private.HandleFunc("/item-types", s.handleItemTypeCreate()).Methods("POST")
+	private.HandleFunc("/item-types", s.handleItemTypeUpdate()).Methods("PUT")
+	private.HandleFunc("/item-types", s.handleItemTypeDelete()).Methods("DELETE")
+
 	private.HandleFunc("/races", s.handleRaceCreate()).Methods("POST")
 	private.HandleFunc("/races", s.handleRaceUpdate()).Methods("PUT")
 	private.HandleFunc("/races", s.handleRaceDelete()).Methods("DELETE")
@@ -81,10 +93,6 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/races/bonuses", s.handleRaceBonusCreate()).Methods("POST")
 	private.HandleFunc("/races/bonuses", s.handleRaceBonusUpdate()).Methods("PUT")
 	private.HandleFunc("/races/bonuses", s.handleRaceBonusDelete()).Methods("DELETE")
-
-	private.HandleFunc("/actions", s.handleActionCreate()).Methods("POST")
-	private.HandleFunc("/actions", s.handleActionUpdate()).Methods("PUT")
-	private.HandleFunc("/actions", s.handleActionDelete()).Methods("DELETE")
 
 	private.HandleFunc("/classes", s.handleClassCreate()).Methods("POST")
 	private.HandleFunc("/classes", s.handleClassUpdate()).Methods("PUT")
