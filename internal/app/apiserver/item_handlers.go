@@ -43,12 +43,7 @@ func (s *server) handleItemCreate() http.HandlerFunc {
 
 func (s *server) handleItemGet() http.HandlerFunc {
 	type request struct {
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Description string `json:"description"`
-		Icon        string `json:"icon"`
-		Count       int    `json:"count"`
-		TypeId      int    `json:"type_id"`
+		ID int `json:"id"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -60,8 +55,15 @@ func (s *server) handleItemGet() http.HandlerFunc {
 			}
 
 			s.respond(w, http.StatusOK, Items)
-		} else {
+		} else if req.ID == 0 {
+			Items, err := s.store.Item().Get()
+			if err != nil {
+				s.error(w, http.StatusInternalServerError, err)
+				return
+			}
 
+			s.respond(w, http.StatusOK, Items)
+		} else {
 			Item, err := s.store.Item().Find(req.ID)
 			if err != nil {
 				s.error(w, http.StatusInternalServerError, err)
@@ -192,7 +194,7 @@ func (s *server) handleItemTypeGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			Items, err := s.store.Item().Get()
+			Items, err := s.store.Item().GetTypes()
 			if err != nil {
 				s.error(w, http.StatusInternalServerError, err)
 				return
@@ -200,7 +202,7 @@ func (s *server) handleItemTypeGet() http.HandlerFunc {
 
 			s.respond(w, http.StatusOK, Items)
 		} else {
-			Item, err := s.store.Item().Find(req.ID)
+			Item, err := s.store.Item().FindType(req.ID)
 			if err != nil {
 				s.error(w, http.StatusInternalServerError, err)
 				return
