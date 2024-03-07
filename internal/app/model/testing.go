@@ -59,6 +59,35 @@ func TestAction(t *testing.T) *Action {
 	}
 }
 
+func TestItem(t *testing.T) *Item {
+	t.Helper()
+	return &Item{
+		Name:        "item",
+		Icon:        "path/icon",
+		Description: "desc",
+		Count:       0,
+		TypeId:      0,
+		UserId:      1,
+	}
+}
+
+func TestItemType(t *testing.T) *ItemType {
+	t.Helper()
+	return &ItemType{
+		Name:   "type",
+		Icon:   "path/icon",
+		UserId: 1,
+	}
+}
+
+func TestItemDescriptor(t *testing.T) *ItemDescriptor {
+	t.Helper()
+	return &ItemDescriptor{
+		Name:   "desc",
+		TypeId: 0,
+	}
+}
+
 func TestCharacterClass(t *testing.T) *CharacterClass {
 	t.Helper()
 	return &CharacterClass{
