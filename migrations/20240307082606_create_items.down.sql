@@ -1,0 +1,4 @@
+DROP TABLE ItemDescriptorLines CASCADE;
+DROP TABLE ItemDescriptors CASCADE;
+DROP TABLE Items CASCADE;
+DROP TABLE ItemTypes CASCADE;
