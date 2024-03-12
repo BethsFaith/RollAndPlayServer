@@ -12,7 +12,6 @@ func (s *server) handleItemCreate() http.HandlerFunc {
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		Icon        string `json:"icon"`
-		Count       int    `json:"count"`
 		TypeId      int    `json:"type_id"`
 	}
 
@@ -28,7 +27,6 @@ func (s *server) handleItemCreate() http.HandlerFunc {
 			Name:        req.Name,
 			Description: req.Description,
 			Icon:        req.Icon,
-			Count:       req.Count,
 			TypeId:      req.TypeId,
 			UserId:      authUser.ID,
 		}
@@ -80,7 +78,6 @@ func (s *server) handleItemUpdate() http.HandlerFunc {
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		Icon        string `json:"icon"`
-		Count       int    `json:"count"`
 		TypeId      int    `json:"type_id"`
 	}
 
@@ -93,10 +90,10 @@ func (s *server) handleItemUpdate() http.HandlerFunc {
 
 		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		item := &model.Item{
+			ID:          req.ID,
 			Name:        req.Name,
 			Description: req.Description,
 			Icon:        req.Icon,
-			Count:       req.Count,
 			TypeId:      req.TypeId,
 			UserId:      authUser.ID,
 		}

@@ -23,8 +23,8 @@ func (r *ItemRepository) Create(i *model.Item) error {
 	}
 
 	return r.store.CreateRetId(
-		InsertQ+ItemsT+ItemsP+"values ($1, $2, $3, $4, $5, $6) RETURNING id",
-		i.Name, i.Description, i.Icon, i.Count, i.RefTypeId, i.UserId,
+		InsertQ+ItemsT+ItemsP+"values ($1, $2, $3, $4, $5) RETURNING id",
+		i.Name, i.Description, i.Icon, i.RefTypeId, i.UserId,
 	).Scan(&i.ID)
 }
 
@@ -42,8 +42,7 @@ func (r *ItemRepository) Get() ([]*model.Item, error) {
 	for bRows.Next() {
 		i := &model.Item{}
 
-		err := bRows.Scan(&i.ID, &i.Name, &i.Description, &i.Icon, &i.Count,
-			&i.RefTypeId, &i.UserId)
+		err := bRows.Scan(&i.ID, &i.Name, &i.Description, &i.Icon, &i.RefTypeId, &i.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -67,7 +66,6 @@ func (r *ItemRepository) Find(id int) (*model.Item, error) {
 		&i.Name,
 		&i.Description,
 		&i.Icon,
-		&i.Count,
 		&i.RefTypeId,
 		&i.UserId,
 	); err != nil {
@@ -95,8 +93,8 @@ func (r *ItemRepository) Update(i *model.Item) error {
 
 	_, err = r.store.Update(
 		UpdateQ+ItemsT+"SET name = $1, description = $2, icon = $3, "+
-			"count = $4, type_id = $5, user_id = $6 WHERE id = $7",
-		i.Name, i.Description, i.Icon, i.Count, i.RefTypeId, i.UserId, i.ID,
+			"type_id = $4, user_id = $5 WHERE id = $6",
+		i.Name, i.Description, i.Icon, i.RefTypeId, i.UserId, i.ID,
 	)
 
 	return err

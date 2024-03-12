@@ -10,7 +10,6 @@ type Item struct {
 	Name        string        `json:"name"`
 	Description string        `json:"description"`
 	Icon        string        `json:"icon"`
-	Count       int           `json:"count"`
 	TypeId      int           `json:"type_id"`
 	RefTypeId   sql.NullInt64 `json:"-"`
 	UserId      int           `json:"user_id"`
@@ -21,7 +20,6 @@ func (i *Item) Validate() error {
 	return validation.ValidateStruct(
 		i,
 		validation.Field(&i.Name, validation.Required),
-		validation.Field(&i.Count, validation.Min(0)),
 		validation.Field(&i.TypeId, validation.Min(0)),
 		validation.Field(&i.UserId, validation.Required, validation.Min(1)),
 	)

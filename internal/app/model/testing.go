@@ -65,7 +65,6 @@ func TestItem(t *testing.T) *Item {
 		Name:        "item",
 		Icon:        "path/icon",
 		Description: "desc",
-		Count:       0,
 		TypeId:      0,
 		UserId:      1,
 	}

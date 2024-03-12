@@ -60,7 +60,6 @@ func (r *ItemRepository) Update(c *model.Item) error {
 	source.Name = c.Name
 	source.Icon = c.Icon
 	source.TypeId = c.TypeId
-	source.Count = c.Count
 	source.UserId = c.UserId
 
 	return nil

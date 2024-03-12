@@ -16,7 +16,6 @@ CREATE TABLE Items
     name varchar not null,
     description varchar,
     icon VARCHAR(1024),
-    count integer not null,
 
     type_id integer references Item_Types (id) on delete cascade,
     user_id integer not null references users(id) on delete cascade,
