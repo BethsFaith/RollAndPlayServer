@@ -225,6 +225,7 @@ func (s *server) handleItemTypeUpdate() http.HandlerFunc {
 
 		authUser := r.Context().Value(ctxKeyUser).(*model.User)
 		itemType := &model.ItemType{
+			ID:     req.ID,
 			Name:   req.Name,
 			Icon:   req.Icon,
 			UserId: authUser.ID,
@@ -272,7 +273,7 @@ func (s *server) handleItemTypeDelete() http.HandlerFunc {
 			return
 		}
 
-		if err := s.store.Item().Delete(itemType.ID); err != nil {
+		if err := s.store.Item().DeleteType(itemType.ID); err != nil {
 			s.error(w, http.StatusUnprocessableEntity, err)
 			return
 		}
