@@ -7,6 +7,7 @@ type Store interface {
 	Skill() SkillRepository
 	Race() RaceRepository
 	Action() ActionRepository
+	Item() ItemRepository
 	CharacterClass() CharacterClassRepository
 	RaceBonus() RaceBonusRepository
 	CharacterClassBonus() CharacterClassBonusRepository

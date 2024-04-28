@@ -11,6 +11,7 @@ type Store struct {
 	skillRepository               *SkillRepository
 	raceRepository                *RaceRepository
 	actionRepository              *ActionRepository
+	itemRepository                *ItemRepository
 	classRepository               *CharacterClassRepository
 	raceBonusRepository           *RaceBonusRepository
 	characterClassBonusRepository *CharacterClassBonusRepository
@@ -85,6 +86,21 @@ func (s *Store) Action() store.ActionRepository {
 	}
 
 	return s.actionRepository
+}
+
+func (s *Store) Item() store.ItemRepository {
+	if s.itemRepository != nil {
+		return s.itemRepository
+	}
+
+	s.itemRepository = &ItemRepository{
+		store:       s,
+		items:       make(map[int]*model.Item),
+		types:       make(map[int]*model.ItemType),
+		descriptors: make(map[int]*model.ItemDescriptor),
+	}
+
+	return s.itemRepository
 }
 
 func (s *Store) CharacterClass() store.CharacterClassRepository {

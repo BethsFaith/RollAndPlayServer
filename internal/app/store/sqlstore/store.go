@@ -13,6 +13,7 @@ type Store struct {
 	skillRepository               *SkillRepository
 	raceRepository                *RaceRepository
 	actionRepository              *ActionRepository
+	itemRepository                *ItemRepository
 	characterClassRepository      *CharacterClassRepository
 	raceBonusRepository           *RaceBonusRepository
 	characterClassBonusRepository *CharacterClassBonusRepository
@@ -112,6 +113,18 @@ func (s *Store) Action() store.ActionRepository {
 	}
 
 	return s.actionRepository
+}
+
+func (s *Store) Item() store.ItemRepository {
+	if s.itemRepository != nil {
+		return s.itemRepository
+	}
+
+	s.itemRepository = &ItemRepository{
+		store: s,
+	}
+
+	return s.itemRepository
 }
 
 func (s *Store) CharacterClass() store.CharacterClassRepository {

@@ -70,6 +70,7 @@ func (s *server) handleSkillCategoryCreate() http.HandlerFunc {
 func (s *server) handleSkillGet() http.HandlerFunc {
 	type request struct {
 		CategoryId int `json:"category_id"`
+		Id         int `json:"id"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -82,12 +83,23 @@ func (s *server) handleSkillGet() http.HandlerFunc {
 
 			s.respond(w, http.StatusOK, skills)
 		} else {
-			skills, err := s.store.Skill().GetByCategory(req.CategoryId)
-			if err != nil {
-				s.error(w, http.StatusInternalServerError, err)
-				return
+			if req.Id != 0 {
+				skill, err := s.store.Skill().Find(req.Id)
+				if err != nil {
+					s.error(w, http.StatusInternalServerError, err)
+					return
+				}
+				s.respond(w, http.StatusOK, skill)
+			} else if req.CategoryId != 0 {
+				skills, err := s.store.Skill().GetByCategory(req.CategoryId)
+				if err != nil {
+					s.error(w, http.StatusInternalServerError, err)
+					return
+				}
+				s.respond(w, http.StatusOK, skills)
+			} else {
+				s.error(w, http.StatusBadRequest, nil)
 			}
-			s.respond(w, http.StatusOK, skills)
 		}
 	}
 }

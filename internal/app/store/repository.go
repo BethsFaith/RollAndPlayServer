@@ -10,6 +10,14 @@ type UserRepository interface {
 	Update(u *model.User) error
 }
 
+type CharacteristicRepository interface {
+	Create(characteristic *model.Characteristic) error
+	Find(int) (*model.Characteristic, error)
+	Get() ([]*model.Characteristic, error)
+	Update(*model.Characteristic) error
+	Delete(int) error
+}
+
 // SkillRepository ...
 type SkillRepository interface {
 	Create(*model.Skill) error
@@ -39,6 +47,24 @@ type ActionRepository interface {
 	Find(int) (*model.Action, error)
 	Update(*model.Action) error
 	Delete(int) error
+}
+
+type ItemRepository interface {
+	Create(*model.Item) error
+	Get() ([]*model.Item, error)
+	Find(int) (*model.Item, error)
+	Update(*model.Item) error
+	Delete(int) error
+	CreateType(*model.ItemType) error
+	GetTypes() ([]*model.ItemType, error)
+	FindType(int) (*model.ItemType, error)
+	UpdateType(*model.ItemType) error
+	DeleteType(int) error
+	CreateDescriptor(*model.ItemDescriptor) error
+	GetDescriptors() ([]*model.ItemDescriptor, error)
+	FindDescriptor(int) (*model.ItemDescriptor, error)
+	UpdateDescriptor(*model.ItemDescriptor) error
+	DeleteDescriptor(int) error
 }
 
 type CharacterClassRepository interface {
@@ -81,12 +107,4 @@ type SystemRepository interface {
 	DeleteRace(int, int) error
 	DeleteCharacterClass(int, int) error
 	DeleteSkillCategory(int, int) error
-}
-
-type CharacteristicRepository interface {
-	Create(characteristic *model.Characteristic) error
-	Find(int) (*model.Characteristic, error)
-	Get() ([]*model.Characteristic, error)
-	Update(*model.Characteristic) error
-	Delete(int) error
 }
